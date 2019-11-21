@@ -59,6 +59,11 @@ resource "null_resource" "deploy_postgres" {
   provisioner "local-exec" {
     command = "${path.module}/scripts/deploy-service.sh ${local.service_name} ${var.service_namespace} Alias ${local.service_class} ${local.binding_name} ${local.binding_namespaces}"
   }
+
+  provisioner "local-exec" {
+    when    = "destroy"
+    command = "${path.module}/scripts/destroy-service.sh ${local.service_name} ${var.service_namespace} ${local.binding_name}"
+  }
 }
 
 resource "null_resource" "create_tmp" {

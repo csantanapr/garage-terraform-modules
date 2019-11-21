@@ -18,4 +18,9 @@ resource "null_resource" "deploy_cloud_object_store" {
       RESOURCE_LOCATION = "${local.location}"
     }
   }
+
+  provisioner "local-exec" {
+    when    = "destroy"
+    command = "${path.module}/scripts/destroy-service.sh ${local.service_name} ${var.service_namespace} ${local.binding_name}"
+  }
 }
