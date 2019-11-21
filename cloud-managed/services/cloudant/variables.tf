@@ -39,3 +39,8 @@ variable "plan" {
   description = "The type of plan the service instance should run under (lite or standard)"
   default     = "standard"
 }
+
+variable "service_namespace" {
+  type        = "string"
+  description = "The namespace where the service obj will be created"
+}

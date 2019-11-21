@@ -1,25 +1,25 @@
 output "postgresql_service_account_username" {
-  value       = "${data.local_file.username.content}"
+  value       = "${data.kubernetes_secret.binding.data.username}"
   description = "Username for the Databases for PostgreSQL service account."
 }
 
 output "postgresql_service_account_password" {
-  value       = "${data.local_file.password.content}"
+  value       = "${data.kubernetes_secret.binding.data.password}"
   description = "Password for the Databases for PostgreSQL Sservice account."
   sensitive   = true
 }
 
 output "postgresql_hostname" {
-  value       = "${data.local_file.hostname.content}"
+  value       = "${data.kubernetes_secret.binding.data.hostname}"
   description = "Hostname for the Databases for PostgreSQL instance."
 }
 
 output "postgresql_port" {
-  value       = "${data.local_file.port.content}"
+  value       = "${data.kubernetes_secret.binding.data.port}"
   description = "Port for the Databases for PostgreSQL instance."
 }
 
 output "postgresql_database_name" {
-  value       = "${data.local_file.dbname.content}"
+  value       = "${data.kubernetes_secret.binding.data.database}"
   description = "Database name for the Databases for PostgreSQL instance."
 }

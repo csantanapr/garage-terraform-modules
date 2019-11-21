@@ -1,54 +1,21 @@
-data "ibm_resource_group" "tools_resource_group" {
-  name = "${var.resource_group_name}"
-}
-
 locals {
-  namespaces        = ["${var.dev_namespace}", "${var.test_namespace}", "${var.staging_namespace}"]
-  namespace_count   = 3
-  role              = "Writer"
-  name_prefix       = "${var.name_prefix != "" ? var.name_prefix : var.resource_group_name}"
-  resource_location = "${var.resource_location == "us-east" ? "us-south" : var.resource_location}"
+  short_name         = "appid"
+  namespaces         = ["${var.dev_namespace}", "${var.test_namespace}", "${var.staging_namespace}"]
+  name_prefix        = "${var.name_prefix != "" ? var.name_prefix : var.resource_group_name}"
+  region             = "${var.resource_location == "us-east" ? "us-south" : var.resource_location}"
+  service_name       = "${replace(local.name_prefix, "/[^a-zA-Z0-9_\\-\\.]/", "")}-${local.short_name}"
+  service_class      = "appid"
+  binding_name       = "binding-${local.short_name}"
+  binding_namespaces = "${jsonencode(local.namespaces)}"
 }
 
 // AppID - App Authentication
-resource "ibm_resource_instance" "appid_instance" {
-  name              = "${replace(local.name_prefix, "/[^a-zA-Z0-9_\\-\\.]/", "")}-appid"
-  service           = "appid"
-  plan              = "${var.plan}"
-  location          = "${local.resource_location}"
-  resource_group_id = "${data.ibm_resource_group.tools_resource_group.id}"
+resource "null_resource" "deploy_appid" {
+  provisioner "local-exec" {
+    command = "${path.module}/scripts/deploy-service.sh ${local.service_name} ${var.service_namespace} ${var.plan} ${local.service_class} ${local.binding_name} ${local.binding_namespaces}"
 
-  timeouts {
-    create = "15m"
-    update = "15m"
-    delete = "15m"
-  }
-}
-
-resource "ibm_resource_key" "appid_key" {
-  name                 = "${ibm_resource_instance.appid_instance.name}-key"
-  role                 = "${local.role}"
-  resource_instance_id = "${ibm_resource_instance.appid_instance.id}"
-
-  //User can increase timeouts
-  timeouts {
-    create = "15m"
-    delete = "15m"
-  }
-}
-
-resource "ibm_container_bind_service" "appid_service_binding" {
-  count = "${local.namespace_count}"
-
-  cluster_name_id       = "${var.cluster_id}"
-  service_instance_name = "${ibm_resource_instance.appid_instance.name}"
-  namespace_id          = "${local.namespaces[count.index]}"
-  resource_group_id     = "${data.ibm_resource_group.tools_resource_group.id}"
-  key                   = "${ibm_resource_key.appid_key.name}"
-
-  // The provider (v16.1) is incorrectly registering that these values change each time,
-  // this may be removed in the future if this is fixed.
-  lifecycle {
-    ignore_changes = ["id", "namespace_id", "service_instance_name"]
+    environment {
+      REGION = "${local.region}"
+    }
   }
 }
