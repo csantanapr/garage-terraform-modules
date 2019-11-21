@@ -2,23 +2,27 @@ data "ibm_resource_group" "tools_resource_group" {
   name = "${var.resource_group_name}"
 }
 locals {
-  namespaces       = ["${var.tools_namespace}", "${var.dev_namespace}", "${var.test_namespace}", "${var.staging_namespace}"]
-  namespace_count  = 4
-  tmp_dir          = "${path.cwd}/.tmp"
-  credentials_file = "${path.cwd}/.tmp/postgres_credentials.json"
-  hostname_file    = "${path.cwd}/.tmp/postgres_hostname.val"
-  port_file        = "${path.cwd}/.tmp/postgres_port.val"
-  username_file    = "${path.cwd}/.tmp/postgres_username.val"
-  password_file    = "${path.cwd}/.tmp/postgres_password.val"
-  dbname_file      = "${path.cwd}/.tmp/postgres_dbname.val"
-  role             = "Administrator"
-  name_prefix      = "${var.name_prefix != "" ? var.name_prefix : var.resource_group_name}"
+  namespaces         = ["${var.tools_namespace}", "${var.dev_namespace}", "${var.test_namespace}", "${var.staging_namespace}"]
+  namespace_count    = 4
+  tmp_dir            = "${path.cwd}/.tmp"
+  credentials_file   = "${path.cwd}/.tmp/postgres_credentials.json"
+  hostname_file      = "${path.cwd}/.tmp/postgres_hostname.val"
+  port_file          = "${path.cwd}/.tmp/postgres_port.val"
+  username_file      = "${path.cwd}/.tmp/postgres_username.val"
+  password_file      = "${path.cwd}/.tmp/postgres_password.val"
+  dbname_file        = "${path.cwd}/.tmp/postgres_dbname.val"
+  role               = "Administrator"
+  name_prefix        = "${var.name_prefix != "" ? var.name_prefix : var.resource_group_name}"
+  service_class      = "databases-for-postgresql"
+  service_name       = "${replace(local.name_prefix, "/[^a-zA-Z0-9_\\-\\.]/", "")}-postgresql"
+  binding_name       = "binding-postgresql"
+  binding_namespaces = "${jsonencode(local.namespaces)}"
 }
 
 resource "ibm_resource_instance" "create_postgresql_instance" {
   count = "${var.server_exists != true ? "1" : "0"}"
 
-  name              = "${replace(local.name_prefix, "/[^a-zA-Z0-9_\\-\\.]/", "")}-postgresql"
+  name              = "${local.service_name}"
   service           = "databases-for-postgresql"
   plan              = "${var.plan}"
   location          = "${var.resource_location}"
@@ -34,7 +38,7 @@ resource "ibm_resource_instance" "create_postgresql_instance" {
 data "ibm_resource_instance" "postgresql_instance" {
   depends_on        = ["ibm_resource_instance.create_postgresql_instance"]
 
-  name              = "${replace(local.name_prefix, "/[^a-zA-Z0-9_\\-\\.]/", "")}-postgresql"
+  name              = "${local.service_name}"
   service           = "databases-for-postgresql"
   location          = "${var.resource_location}"
   resource_group_id = "${data.ibm_resource_group.tools_resource_group.id}"
