@@ -12,3 +12,8 @@ variable "ibmcloud_api_key" {
   type        = "string"
   description = "The api key used to access the IBM Cloud resources"
 }
+
+variable "cluster_config_file" {
+  type        = "string"
+  description = "Cluster config file for Kubernetes cluster."
+}

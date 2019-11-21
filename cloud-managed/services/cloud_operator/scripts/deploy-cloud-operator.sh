@@ -3,6 +3,10 @@
 RESOURCE_GROUP="$1"
 REGION="$2"
 
+if [[ -n "${KUBECONFIG_IKS}" ]]; then
+    export KUBECONFIG="${KUBECONFIG_IKS}"
+fi
+
 ibmcloud login --apikey "${APIKEY}" -r "${REGION}" -g "${RESOURCE_GROUP}"
 
 export IC_APIKEY="${APIKEY}"
