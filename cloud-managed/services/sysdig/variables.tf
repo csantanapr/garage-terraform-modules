@@ -8,19 +8,9 @@ variable "resource_location" {
   description = "Geographic location of the resource (e.g. us-south, us-east)"
 }
 
-variable "dev_namespace" {
+variable "tools_namespace" {
   type        = "string"
-  description = "Development namespace"
-}
-
-variable "test_namespace" {
-  type        = "string"
-  description = "Test namespace"
-}
-
-variable "staging_namespace" {
-  type        = "string"
-  description = "Staging namespace"
+  description = "Tools namespace"
 }
 
 variable "cluster_config_file_path" {
@@ -43,4 +33,9 @@ variable "plan" {
   type        = "string"
   description = "The type of plan the service instance should run under (trial or graduated-tier)"
   default     = "graduated-tier"
+}
+
+variable "service_namespace" {
+  type        = "string"
+  description = "The namespace where the service obj will be created"
 }

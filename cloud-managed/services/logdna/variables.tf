@@ -41,3 +41,8 @@ variable "namespace" {
   description = "The namespace where the agent should be deployed"
   default     = "tools"
 }
+
+variable "service_namespace" {
+  type        = "string"
+  description = "The namespace where the service obj will be created"
+}
