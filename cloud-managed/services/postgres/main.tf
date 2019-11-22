@@ -34,6 +34,8 @@ resource "null_resource" "create_tmp" {
 }
 
 data "kubernetes_secret" "postgres_secret" {
+  depends_on = ["null_resource.deploy_postgres"]
+
   metadata {
     name      = "${local.binding_name}"
     namespace = "${var.tools_namespace}"
