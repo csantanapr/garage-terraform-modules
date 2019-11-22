@@ -17,8 +17,6 @@ locals {
 }
 
 resource "null_resource" "deploy_postgres" {
-  depends_on        = ["ibm_resource_instance.create_postgresql_instance"]
-
   provisioner "local-exec" {
     command = "${path.module}/scripts/deploy-service.sh ${local.service_name} ${var.service_namespace} ${var.plan} ${local.service_class} ${local.binding_name} ${local.binding_namespaces}"
   }
