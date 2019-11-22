@@ -1,19 +1,3 @@
-
-// SysDig - Monitoring
-resource "ibm_resource_instance" "sysdig_instance" {
-  name              = "${replace(local.name_prefix, "/[^a-zA-Z0-9_\\-\\.]/", "")}-sysdig"
-  service           = "sysdig-monitor"
-  plan              = "${var.plan}"
-  location          = "${var.resource_location}"
-  resource_group_id = "${data.ibm_resource_group.tools_resource_group.id}"
-
-  timeouts {
-    create = "15m"
-    update = "15m"
-    delete = "15m"
-  }
-}
-
 locals {
 //  access_key  = "${ibm_resource_key.sysdig_instance_key.credentials["Sysdig Access Key"]}"
 //  endpoint    = "${ibm_resource_key.sysdig_instance_key.credentials["Sysdig Collector Endpoint"]}"
