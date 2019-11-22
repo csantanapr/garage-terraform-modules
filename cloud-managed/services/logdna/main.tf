@@ -54,7 +54,7 @@ resource "null_resource" "write_ingestion_key" {
   depends_on = ["local_file.write_logdna_credentials"]
 
   provisioner "local-exec" {
-    command = "cat ${local.credentials_file} | sed -E \"s/.*injestion_key=([^ ]*).*/\\1/\" | xargs -I{} echo -n {} > ${local.ingestion_key_file}"
+    command = "cat ${local.credentials_file} | sed -E \"s/.*ingestion_key=([^ ]*).*/\\1/\" | xargs -I{} echo -n {} > ${local.ingestion_key_file}"
   }
 }
 
