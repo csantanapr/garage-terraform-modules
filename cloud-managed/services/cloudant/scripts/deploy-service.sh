@@ -33,6 +33,7 @@ helm template "${TMP_DIR}/ibmcloud-service" \
   --set service.class="${SERVICE_CLASS}" \
   --set service.region="${REGION}" \
   --set service.location="${RESOURCE_LOCATION}" \
+  --set service.resourcegroup="${RESOURCE_GROUP}" \
   --set binding.name="${BINDING_NAME}" \
   --set binding.namespaces="${BINDING_NAMESPACES}" > "${YAML_FILE}"
 

@@ -15,7 +15,8 @@ resource "null_resource" "deploy_appid" {
     command = "${path.module}/scripts/deploy-service.sh ${local.service_name} ${var.service_namespace} ${var.plan} ${local.service_class} ${local.binding_name} ${local.binding_namespaces}"
 
     environment {
-      REGION = "${local.region}"
+      REGION         = "${local.region}"
+      RESOURCE_GROUP = "${var.resource_group_name}"
     }
   }
 

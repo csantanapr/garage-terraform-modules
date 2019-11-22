@@ -16,7 +16,8 @@ resource "null_resource" "deploy_logdna" {
     command = "${path.module}/scripts/deploy-service.sh ${local.service_name} ${var.service_namespace} ${var.plan} ${local.service_class} ${local.binding_name} ${local.binding_namespaces}"
 
     environment {
-      REGION = "${var.resource_location}"
+      REGION         = "${var.resource_location}"
+      RESOURCE_GROUP = "${var.resource_group_name}"
     }
   }
 
