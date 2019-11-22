@@ -70,7 +70,7 @@ resource "null_resource" "write_endpoint" {
 }
 
 data "local_file" "access_key" {
-  depends_on = ["null_resource.write_ingestion_key"]
+  depends_on = ["null_resource.write_access_key"]
 
   filename = "${local.access_key_file}"
 }
@@ -82,8 +82,6 @@ data "local_file" "endpoint" {
 }
 
 resource "null_resource" "create_sysdig_agent" {
-  depends_on = ["ibm_resource_key.sysdig_instance_key"]
-
   provisioner "local-exec" {
     command = "${path.module}/scripts/bind-sysdig.sh ${data.local_file.access_key.content} ${data.local_file.endpoint.content}"
 
