@@ -106,7 +106,7 @@ resource "null_resource" "get_server_url" {
   depends_on = ["data.ibm_container_cluster_config.cluster", "null_resource.ibmcloud_login"]
 
   provisioner "local-exec" {
-    command = "ibmcloud ks cluster-get --cluster $${CLUSTER_NAME} | grep \"Master URL\" | sed -E \"s/Master URL: +(.*)$/\\1/g\" | xargs echo -n > $${FILE}"
+    command = "ibmcloud ks cluster get --cluster $${CLUSTER_NAME} | grep \"Master URL\" | sed -E \"s/Master URL: +(.*)$/\\1/g\" | xargs echo -n > $${FILE}"
 
     environment = {
       CLUSTER_NAME = "${local.cluster_name}"
@@ -125,7 +125,7 @@ resource "null_resource" "get_ingress_subdomain" {
   depends_on = ["data.ibm_container_cluster_config.cluster", "null_resource.ibmcloud_login"]
 
   provisioner "local-exec" {
-    command = "ibmcloud ks cluster-get --cluster $${CLUSTER_NAME} | grep \"Ingress Subdomain\" | sed -E \"s/Ingress Subdomain: +(.*)$/\\1/g\" | xargs echo -n > $${FILE}"
+    command = "ibmcloud ks cluster get --cluster $${CLUSTER_NAME} | grep \"Ingress Subdomain\" | sed -E \"s/Ingress Subdomain: +(.*)$/\\1/g\" | xargs echo -n > $${FILE}"
 
     environment = {
       CLUSTER_NAME = "${local.cluster_name}"
@@ -144,7 +144,7 @@ resource "null_resource" "get_cluster_type" {
   depends_on = ["data.ibm_container_cluster_config.cluster", "null_resource.ibmcloud_login"]
 
   provisioner "local-exec" {
-    command = "if [[ -n $(ibmcloud ks cluster-get --cluster $${CLUSTER_NAME} | grep -E \"Version.*openshift\") ]]; then echo -n \"openshift\" > $${FILE}; else echo -n \"kubernetes\" > $${FILE}; fi"
+    command = "if [[ -n $(ibmcloud ks cluster get --cluster $${CLUSTER_NAME} | grep -E \"Version.*openshift\") ]]; then echo -n \"openshift\" > $${FILE}; else echo -n \"kubernetes\" > $${FILE}; fi"
 
     environment = {
       CLUSTER_NAME = "${local.cluster_name}"
