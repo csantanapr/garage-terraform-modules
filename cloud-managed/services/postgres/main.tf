@@ -22,6 +22,7 @@ resource "null_resource" "deploy_postgres" {
 
     environment {
       RESOURCE_GROUP = "${var.resource_group_name}"
+      REGION         = "${var.resource_location}"
     }
   }
 
