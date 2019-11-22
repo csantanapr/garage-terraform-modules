@@ -8,7 +8,7 @@ BINDING_NAME="$5"
 BINDING_NAMESPACE_JSON="$6"
 
 if [[ -z "${TMP_DIR}" ]]; then
-  TMP_DIR="./tmp"
+  TMP_DIR="./.tmp"
 fi
 
 YAML_FILE="${TMP_DIR}/${SERVICE_NAME}.service.yaml"

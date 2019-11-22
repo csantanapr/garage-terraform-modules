@@ -1,4 +1,5 @@
 locals {
+  tmp_dir            = "${path.cwd}/.tmp"
   short_name         = "logdna"
   namespaces         = ["${var.namespace}"]
   name_prefix        = "${var.name_prefix != "" ? var.name_prefix : var.resource_group_name}"
@@ -8,6 +9,8 @@ locals {
   binding_namespaces = "${jsonencode(local.namespaces)}"
   resource_location  = "${var.resource_location == "us-east" ? "us-south" : var.resource_location}"
   role               = "Manager"
+  credentials_file   = "${local.tmp_dir}/logdna_credentials.json"
+  ingestion_key_file = "${local.tmp_dir}/injestion_key.val"
 }
 
 resource "null_resource" "deploy_logdna" {
@@ -26,23 +29,58 @@ resource "null_resource" "deploy_logdna" {
   }
 }
 
-//resource "null_resource" "logdna_bind" {
-//
-//  provisioner "local-exec" {
-//    command = "${path.module}/scripts/bind-logdna.sh ${var.cluster_type} ${ibm_resource_key.logdna_instance_key.credentials.ingestion_key} ${local.resource_location}"
-//
-//    environment = {
-//      KUBECONFIG_IKS = "${var.cluster_config_file_path}"
-//      TMP_DIR        = "${path.cwd}/.tmp"
-//    }
-//  }
-//
-//  provisioner "local-exec" {
-//    when    = "destroy"
-//    command = "${path.module}/scripts/unbind-logdna.sh ${var.namespace}"
-//
-//    environment = {
-//      KUBECONFIG_IKS = "${var.cluster_config_file_path}"
-//    }
-//  }
-//}
+resource "null_resource" "create_tmp" {
+  provisioner "local-exec" {
+    command = "mkdir -p ${local.tmp_dir}"
+  }
+}
+
+data "kubernetes_secret" "logdna_secret" {
+  depends_on = ["null_resource.deploy_logdna"]
+
+  metadata {
+    name      = "${local.binding_name}"
+    namespace = "${var.namespace}"
+  }
+}
+resource "local_file" "write_logdna_credentials" {
+  depends_on = ["null_resource.deploy_logdna", "null_resource.create_tmp"]
+
+  content     = "${jsonencode(data.kubernetes_secret.logdna_secret.data)}"
+  filename = "${local.credentials_file}"
+}
+
+resource "null_resource" "write_ingestion_key" {
+  depends_on = ["local_file.write_logdna_credentials"]
+
+  provisioner "local-exec" {
+    command = "cat ${local.credentials_file} | sed -E \"s/.*injestion_key=([^ ]*).*/\\1/\" | xargs -I{} echo -n {} > ${local.ingestion_key_file}"
+  }
+}
+
+data "local_file" "injestion_key" {
+  depends_on = ["null_resource.write_ingestion_key"]
+
+  filename = "${local.ingestion_key_file}"
+}
+
+resource "null_resource" "logdna_bind" {
+
+  provisioner "local-exec" {
+    command = "${path.module}/scripts/bind-logdna.sh ${var.cluster_type} ${data.local_file.injestion_key.content} ${local.resource_location}"
+
+    environment = {
+      KUBECONFIG_IKS = "${var.cluster_config_file_path}"
+      TMP_DIR        = "${local.tmp_dir}"
+    }
+  }
+
+  provisioner "local-exec" {
+    when    = "destroy"
+    command = "${path.module}/scripts/unbind-logdna.sh ${var.namespace}"
+
+    environment = {
+      KUBECONFIG_IKS = "${var.cluster_config_file_path}"
+    }
+  }
+}
