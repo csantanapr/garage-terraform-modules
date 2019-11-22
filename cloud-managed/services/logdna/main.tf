@@ -15,7 +15,7 @@ locals {
 
 resource "null_resource" "deploy_logdna" {
   provisioner "local-exec" {
-    command = "${path.module}/scripts/deploy-service.sh ${local.service_name} ${var.service_namespace} ${var.plan} ${local.service_class} ${local.binding_name} ${local.binding_namespaces}"
+    command = "${path.module}/scripts/deploy-service.sh ${local.service_name} ${var.service_namespace} ${var.plan} ${local.service_class} ${local.binding_name} ${local.binding_namespaces} ${var.namespace}"
 
     environment {
       REGION         = "${local.resource_location}"

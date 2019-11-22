@@ -17,7 +17,7 @@ locals {
 
 resource "null_resource" "deploy_sysdig" {
   provisioner "local-exec" {
-    command = "${path.module}/scripts/deploy-service.sh ${local.service_name} ${var.service_namespace} ${var.plan} ${local.service_class} ${local.binding_name} ${local.binding_namespaces}"
+    command = "${path.module}/scripts/deploy-service.sh ${local.service_name} ${var.service_namespace} ${var.plan} ${local.service_class} ${local.binding_name} ${local.binding_namespaces} ${var.tools_namespace}"
 
     environment {
       REGION         = "${var.resource_location}"

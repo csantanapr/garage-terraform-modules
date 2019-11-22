@@ -6,6 +6,7 @@ SERVICE_PLAN="$3"
 SERVICE_CLASS="$4"
 BINDING_NAME="$5"
 BINDING_NAMESPACE_JSON="$6"
+BINDING_NAMESPACE_MAIN="$7"
 
 if [[ -z "${TMP_DIR}" ]]; then
   TMP_DIR="./.tmp"
@@ -49,4 +50,18 @@ if [[ $(kubectl get "service.ibmcloud/${SERVICE_NAME}" -n "${SERVICE_NAMESPACE}"
   exit 1
 else
   echo ">>> ${SERVICE_NAME} is ready"
+fi
+
+if [[ -n "${BINDING_NAMESPACE_MAIN}" ]]; then
+  until [[ $(kubectl get "binding.ibmcloud/${BINDING_NAME}" -n "${BINDING_NAMESPACE_MAIN}" -o jsonpath='{.status.state}') =~ Online|Failed ]]; do
+    echo ">>> Waiting for ${BINDING_NAME} to be ready"
+    sleep 300
+  done
+
+  if [[ $(kubectl get "binding.ibmcloud/${BINDING_NAME}" -n "${BINDING_NAMESPACE_MAIN}" -o jsonpath='{.status.state}') == "Failed" ]]; then
+    echo "*** Service deploy ${BINDING_NAME} failed"
+    exit 1
+  else
+    echo ">>> ${BINDING_NAME} is ready"
+  fi
 fi
