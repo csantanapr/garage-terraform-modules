@@ -44,7 +44,7 @@ data "kubernetes_secret" "postgres_secret" {
 
 // This is SUPER kludgy but it works... Need to revisit
 resource "local_file" "write_postgres_credentials" {
-  content     = "${jsonencode(data.kubernetes_secret.postgres_secret.data.connection)}"
+  content     = "${jsonencode(data.kubernetes_secret.postgres_secret.data)}"
   filename = "${local.credentials_file}"
   depends_on = ["null_resource.deploy_postgres", "null_resource.create_tmp"]
 }
