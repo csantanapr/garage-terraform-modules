@@ -38,8 +38,14 @@ helm template "${TMP_DIR}/ibmcloud-service" \
 
 kubectl apply -f "${YAML_FILE}"
 
-until [[ $(kubectl get "service.ibmcloud/${SERVICE_NAME}" -n "${SERVICE_NAMESPACE}" -o jsonpath='{.status.phase}') == "Running" ]]; do
+until [[ $(kubectl get "service.ibmcloud/${SERVICE_NAME}" -n "${SERVICE_NAMESPACE}" -o jsonpath='{.status.state}') =~ Online|Failed ]]; do
   echo ">>> Waiting for ${SERVICE_CLASS} to be ready"
   sleep 300
 done
-echo ">>> ${SERVICE_CLASS} is ready"
+
+if [[ $(kubectl get "service.ibmcloud/${SERVICE_NAME}" -n "${SERVICE_NAMESPACE}" -o jsonpath='{.status.state}') == "Failed" ]]; then
+  echo "*** Service deploy $SERVICE_NAME failed"
+  exit 1
+else
+  echo ">>> ${SERVICE_NAME} is ready"
+fi

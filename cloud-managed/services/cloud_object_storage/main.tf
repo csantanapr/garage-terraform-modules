@@ -15,7 +15,7 @@ resource "null_resource" "deploy_cloud_object_store" {
     command = "${path.module}/scripts/deploy-service.sh ${local.service_name} ${var.service_namespace} ${var.plan} ${local.service_class} ${local.binding_name} ${local.binding_namespaces}"
 
     environment {
-      RESOURCE_LOCATION = "${local.location}"
+      REGION = "${local.location}"
     }
   }
 
