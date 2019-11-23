@@ -57,7 +57,7 @@ resource "null_resource" "write_access_key" {
   depends_on = ["local_file.write_sysdig_credentials"]
 
   provisioner "local-exec" {
-    command = "cat ${local.credentials_file} | sed -E \"s/.*Sysdig_Access_Key=([^ ]*).*/\\1/\" | xargs -I{} echo -n {} > ${local.access_key_file}"
+    command = "${path.module}/scripts/extract_json_value.sh ${local.credentials_file} Sysdig_Access_Key > ${local.access_key_file}"
   }
 }
 
@@ -65,7 +65,7 @@ resource "null_resource" "write_endpoint" {
   depends_on = ["local_file.write_sysdig_credentials"]
 
   provisioner "local-exec" {
-    command = "cat ${local.credentials_file} | sed -E \"s/.*Sysdig_Collector_Endpoint=([^ ]*).*/\\1/\" | xargs -I{} echo -n {} > ${local.endpoint_file}"
+    command = "${path.module}/scripts/extract_json_value.sh ${local.credentials_file} Sysdig_Collector_Endpoint > ${local.endpoint_file}"
   }
 }
 

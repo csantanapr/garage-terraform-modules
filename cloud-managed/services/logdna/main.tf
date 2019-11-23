@@ -10,7 +10,7 @@ locals {
   resource_location  = "${var.resource_location == "us-east" ? "us-south" : var.resource_location}"
   role               = "Manager"
   credentials_file   = "${local.tmp_dir}/logdna_credentials.json"
-  ingestion_key_file = "${local.tmp_dir}/injestion_key.val"
+  ingestion_key_file = "${local.tmp_dir}/logdna_injestion_key.val"
 }
 
 resource "null_resource" "deploy_logdna" {
@@ -54,7 +54,7 @@ resource "null_resource" "write_ingestion_key" {
   depends_on = ["local_file.write_logdna_credentials"]
 
   provisioner "local-exec" {
-    command = "${path.module}/scripts/extract_ingestion_key.sh ${local.credentials_file}  > ${local.ingestion_key_file}"
+    command = "${path.module}/scripts/extract_json_value.sh ${local.credentials_file} ingestion_key > ${local.ingestion_key_file}"
   }
 }
 
