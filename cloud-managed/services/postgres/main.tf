@@ -29,7 +29,7 @@ resource "null_resource" "deploy_postgres" {
 
   provisioner "local-exec" {
     when    = "destroy"
-    command = "${path.module}/scripts/destroy-service.sh ${local.service_name} ${var.service_namespace} ${local.binding_name}"
+    command = "${path.module}/scripts/destroy-service.sh ${local.service_name} ${var.service_namespace}"
   }
 }
 
