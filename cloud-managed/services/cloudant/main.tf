@@ -16,6 +16,7 @@ resource "null_resource" "deploy_cloudant" {
     environment {
       RESOURCE_GROUP = "${var.resource_group_name}"
       REGION         = "${var.resource_location}"
+      TMP_DIR        = "${path.cwd}/.tmp"
     }
   }
 

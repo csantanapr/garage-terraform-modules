@@ -20,6 +20,7 @@ resource "null_resource" "deploy_logdna" {
     environment {
       REGION         = "${local.resource_location}"
       RESOURCE_GROUP = "${var.resource_group_name}"
+      TMP_DIR        = "${local.tmp_dir}"
     }
   }
 

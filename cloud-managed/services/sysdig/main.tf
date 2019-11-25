@@ -22,6 +22,7 @@ resource "null_resource" "deploy_sysdig" {
     environment {
       REGION         = "${var.resource_location}"
       RESOURCE_GROUP = "${var.resource_group_name}"
+      TMP_DIR        = "${local.tmp_dir}"
     }
   }
 

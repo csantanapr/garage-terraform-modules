@@ -11,6 +11,7 @@ BINDING_NAMESPACE_MAIN="$7"
 if [[ -z "${TMP_DIR}" ]]; then
   TMP_DIR="./.tmp"
 fi
+mkdir -p ${TMP_DIR}
 
 YAML_FILE="${TMP_DIR}/${SERVICE_NAME}.service.yaml"
 

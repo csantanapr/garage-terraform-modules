@@ -17,6 +17,7 @@ resource "null_resource" "deploy_appid" {
     environment {
       REGION         = "${local.region}"
       RESOURCE_GROUP = "${var.resource_group_name}"
+      TMP_DIR        = "${path.cwd}/.tmp"
     }
   }
 
