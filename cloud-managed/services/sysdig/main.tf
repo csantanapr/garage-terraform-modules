@@ -32,41 +32,25 @@ resource "null_resource" "deploy_sysdig" {
   }
 }
 
-data "kubernetes_secret" "sysdig_secret" {
-  depends_on = ["null_resource.deploy_sysdig"]
-
-  metadata {
-    name      = "${local.binding_name}"
-    namespace = "${var.tools_namespace}"
-  }
-}
-
 resource "null_resource" "create_tmp" {
   provisioner "local-exec" {
     command = "mkdir -p ${local.tmp_dir}"
   }
 }
 
-resource "local_file" "write_sysdig_credentials" {
+resource "null_resource" "write_access_key" {
   depends_on = ["null_resource.deploy_sysdig", "null_resource.create_tmp"]
 
-  content  = "${jsonencode(data.kubernetes_secret.sysdig_secret.data)}"
-  filename = "${local.credentials_file}"
-}
-
-resource "null_resource" "write_access_key" {
-  depends_on = ["local_file.write_sysdig_credentials"]
-
   provisioner "local-exec" {
-    command = "${path.module}/scripts/extract_json_value.sh ${local.credentials_file} Sysdig_Access_Key > ${local.access_key_file}"
+    command = "${path.module}/scripts/get-secret-value.sh ${local.binding_name} ${var.tools_namespace} Sysdig_Access_Key > ${local.access_key_file}"
   }
 }
 
 resource "null_resource" "write_endpoint" {
-  depends_on = ["local_file.write_sysdig_credentials"]
+  depends_on = ["null_resource.deploy_sysdig", "null_resource.create_tmp"]
 
   provisioner "local-exec" {
-    command = "${path.module}/scripts/extract_json_value.sh ${local.credentials_file} Sysdig_Collector_Endpoint > ${local.endpoint_file}"
+    command = "${path.module}/scripts/get-secret-value.sh ${local.binding_name} ${var.tools_namespace} Sysdig_Collector_Endpoint > ${local.endpoint_file}"
   }
 }
 

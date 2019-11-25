@@ -39,24 +39,17 @@ resource "null_resource" "create_tmp" {
   }
 }
 
-data "kubernetes_secret" "postgres_secret" {
-  depends_on = ["null_resource.deploy_postgres"]
+// This is SUPER kludgy but it works... Need to revisit
+resource "null_resource" "write_postgres_credentials" {
+  depends_on = ["null_resource.deploy_logdna", "null_resource.create_tmp"]
 
-  metadata {
-    name      = "${local.binding_name}"
-    namespace = "${var.tools_namespace}"
+  provisioner "local-exec" {
+    command = "${path.module}/scripts/get-secret-value.sh ${local.binding_name} ${var.tools_namespace} ingestion_key > ${local.credentials_file}"
   }
 }
 
-// This is SUPER kludgy but it works... Need to revisit
-resource "local_file" "write_postgres_credentials" {
-  content     = "${jsonencode(data.kubernetes_secret.postgres_secret.data)}"
-  filename = "${local.credentials_file}"
-  depends_on = ["null_resource.deploy_postgres", "null_resource.create_tmp"]
-}
-
 resource "null_resource" "write_hostname" {
-  depends_on = ["local_file.write_postgres_credentials"]
+  depends_on = ["null_resource.write_postgres_credentials"]
 
   provisioner "local-exec" {
     command = "cat ${local.credentials_file} | sed -E \"s/.*host=([^ ]*).*/\\1/\" > ${local.hostname_file}"
@@ -64,7 +57,7 @@ resource "null_resource" "write_hostname" {
 }
 
 resource "null_resource" "write_port" {
-  depends_on = ["local_file.write_postgres_credentials"]
+  depends_on = ["null_resource.write_postgres_credentials"]
 
   provisioner "local-exec" {
     command = "cat ${local.credentials_file} | sed -E \"s/.*port=([0-9]*).*/\\1/\" > ${local.port_file}"
@@ -72,7 +65,7 @@ resource "null_resource" "write_port" {
 }
 
 resource "null_resource" "write_username" {
-  depends_on = ["local_file.write_postgres_credentials"]
+  depends_on = ["null_resource.write_postgres_credentials"]
 
   provisioner "local-exec" {
     command = "cat ${local.credentials_file} | sed -E \"s/.*user=([^ ]*).*/\\1/\" > ${local.username_file}"
@@ -80,7 +73,7 @@ resource "null_resource" "write_username" {
 }
 
 resource "null_resource" "write_password" {
-  depends_on = ["local_file.write_postgres_credentials"]
+  depends_on = ["null_resource.write_postgres_credentials"]
 
   provisioner "local-exec" {
     command = "cat ${local.credentials_file} | sed -E \"s/.*PGPASSWORD=([^ ]*).*/\\1/\" > ${local.password_file}"
@@ -88,7 +81,7 @@ resource "null_resource" "write_password" {
 }
 
 resource "null_resource" "write_dbname" {
-  depends_on = ["local_file.write_postgres_credentials"]
+  depends_on = ["null_resource.write_postgres_credentials"]
 
   provisioner "local-exec" {
     command = "cat ${local.credentials_file} | sed -E \"s/.*dbname=([^ ]*).*/\\1/\" > ${local.dbname_file}"

@@ -36,26 +36,11 @@ resource "null_resource" "create_tmp" {
   }
 }
 
-data "kubernetes_secret" "logdna_secret" {
-  depends_on = ["null_resource.deploy_logdna"]
-
-  metadata {
-    name      = "${local.binding_name}"
-    namespace = "${var.namespace}"
-  }
-}
-resource "local_file" "write_logdna_credentials" {
+resource "null_resource" "write_ingestion_key" {
   depends_on = ["null_resource.deploy_logdna", "null_resource.create_tmp"]
 
-  content     = "${jsonencode(data.kubernetes_secret.logdna_secret.data)}"
-  filename = "${local.credentials_file}"
-}
-
-resource "null_resource" "write_ingestion_key" {
-  depends_on = ["local_file.write_logdna_credentials"]
-
   provisioner "local-exec" {
-    command = "${path.module}/scripts/extract_json_value.sh ${local.credentials_file} ingestion_key > ${local.ingestion_key_file}"
+    command = "${path.module}/scripts/get-secret-value.sh ${local.binding_name} ${var.namespace} ingestion_key > ${local.ingestion_key_file}"
   }
 }
 
