@@ -41,7 +41,7 @@ resource "null_resource" "create_tmp" {
 
 // This is SUPER kludgy but it works... Need to revisit
 resource "null_resource" "write_postgres_credentials" {
-  depends_on = ["null_resource.deploy_logdna", "null_resource.create_tmp"]
+  depends_on = ["null_resource.deploy_postgres", "null_resource.create_tmp"]
 
   provisioner "local-exec" {
     command = "${path.module}/scripts/get-secret-value.sh ${local.binding_name} ${var.tools_namespace} ingestion_key > ${local.credentials_file}"
