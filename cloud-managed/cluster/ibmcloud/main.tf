@@ -183,6 +183,8 @@ resource "null_resource" "cluster_login" {
 }
 
 resource "null_resource" "create_registry_namespace" {
+  depends_on = ["null_resource.ibmcloud_login"]
+
   provisioner "local-exec" {
     command = "${path.module}/scripts/create-registry-namespace.sh ${var.resource_group_name} ${var.cluster_region} ${local.registry_url_file}"
 
