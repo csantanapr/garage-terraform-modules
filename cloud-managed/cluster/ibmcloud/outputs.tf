@@ -5,26 +5,31 @@ output "id" {
 }
 
 output "name" {
+  depends_on  = ["null_resource.ibmcloud_apikey_release"]
   value       = "${local.cluster_name}"
   description = "Name of the cluster."
 }
 
 output "resource_group_name" {
+  depends_on  = ["null_resource.ibmcloud_apikey_release"]
   value       = "${var.resource_group_name}"
   description = "Name of the resource group containing the cluster."
 }
 
 output "region" {
+  depends_on  = ["null_resource.ibmcloud_apikey_release"]
   value       = "${var.cluster_region}"
   description = "Region containing the cluster."
 }
 
 output "ingress_hostname" {
+  depends_on  = ["null_resource.ibmcloud_apikey_release"]
   value       = "${data.local_file.ingress_subdomain.content}"
   description = "Ingress hostname of the cluster."
 }
 
 output "server_url" {
+  depends_on  = ["null_resource.ibmcloud_apikey_release"]
   value       = "${data.local_file.server_url.content}"
   description = "The url of the control server."
 }
@@ -42,23 +47,25 @@ output "type" {
 }
 
 output "login_user" {
+  depends_on  = ["null_resource.ibmcloud_apikey_release"]
   value       = "${var.login_user}"
   description = "The username used to log into the openshift cli"
 }
 
 output "login_password" {
-  depends_on  = ["null_resource.cluster_login"]
+  depends_on  = ["null_resource.ibmcloud_apikey_release"]
   value       = "${var.ibmcloud_api_key}"
   description = "The password used to log into the openshift cli"
 }
 
 output "ibmcloud_api_key" {
-  depends_on  = ["null_resource.cluster_login"]
+  depends_on  = ["null_resource.ibmcloud_apikey_release"]
   value       = "${var.ibmcloud_api_key}"
   description = "The API key for the environment"
 }
 
 output "tls_secret_name" {
+  depends_on  = ["null_resource.ibmcloud_apikey_release"]
   value       = "${data.local_file.tls_secret_name.content}"
   description = "The name of the secret containin the tls information for the cluster"
 }
