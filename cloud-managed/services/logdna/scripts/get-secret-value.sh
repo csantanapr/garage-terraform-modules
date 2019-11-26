@@ -4,5 +4,4 @@ NAME="$1"
 NAMESPACE="$2"
 KEY="$3"
 
-kubectl get "secret/${NAME}" -n "${NAMESPACE}" -o json
-kubectl get "secret/${NAME}" -n "${NAMESPACE}" -o "jsonpath={.data.${KEY}}" | base64 -D
+kubectl get "secret/${NAME}" -n "${NAMESPACE}" -o "jsonpath={.data.${KEY}}" | base64 --decode | xargs echo -n
