@@ -2,6 +2,10 @@
 
 SCRIPT_DIR=$(cd $(dirname $0); pwd -P)
 CHART_DIR=$(cd "${SCRIPT_DIR}/../charts"; pwd -P)
+
+NAMESPACE="$1"
+INGRESS_HOST="$2"
+
 URL="http://${INGRESS_HOST}"
 
 if [[ -z "${TMP_DIR}" ]]; then
@@ -13,7 +17,6 @@ YAML_OUTPUT=${TMP_DIR}/tekton-config.yaml
 
 # installs the tekton dashboard
 # note: The namespace is hardcoded in the dashboard-latest-release file
-NAMESPACE="tekton-pipelines"
 kubectl create namespace ${NAMESPACE}
 kubectl apply --filename https://github.com/tektoncd/dashboard/releases/download/v0.2.1/dashboard-latest-release.yaml
 
