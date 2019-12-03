@@ -5,7 +5,8 @@ MODULE_DIR=$(cd ${SCRIPT_DIR}/..; pwd -P)
 
 NAMESPACE="$1"
 JENKINS_HOST="$2"
-TLS_SECRET_NAME="$3"
+HELM_VERSION="$3"
+TLS_SECRET_NAME="$4"
 
 if [[ -z "${TMP_DIR}" ]]; then
     TMP_DIR=".tmp"
@@ -18,6 +19,7 @@ NAME="jenkins"
 
 VALUES_FILE="${MODULE_DIR}/jenkins-values.yaml"
 JENKINS_CONFIG_CHART="${MODULE_DIR}/charts/jenkins-config"
+CLUSTER_ROLE_CHART="${MODULE_DIR}/charts/jenkins-cluster-role"
 KUSTOMIZE_TEMPLATE="${MODULE_DIR}/kustomize/jenkins"
 
 CHART_DIR="${TMP_DIR}/charts"
@@ -28,12 +30,13 @@ JENKINS_CHART="${CHART_DIR}/jenkins"
 JENKINS_KUSTOMIZE="${KUSTOMIZE_DIR}/jenkins"
 JENKINS_BASE_KUSTOMIZE="${JENKINS_KUSTOMIZE}/base.yaml"
 JENKINS_CONFIG_KUSTOMIZE="${JENKINS_KUSTOMIZE}/jenkins-config.yaml"
+CLUSTER_ROLE_KUSTOMIZE="${JENKINS_KUSTOMIZE}/cluster-role.yaml"
 
 JENKINS_YAML="${TMP_DIR}/jenkins.yaml"
 
 echo "*** Fetching Jenkins helm chart from ${CHART_REPO} into ${CHART_DIR}"
 mkdir -p "${CHART_DIR}"
-helm fetch --repo "${CHART_REPO}" --untar --untardir "${CHART_DIR}" jenkins
+helm fetch --repo "${CHART_REPO}" --untar --untardir "${CHART_DIR}" --version ${HELM_VERSION} jenkins
 
 echo "*** Setting up kustomize directory"
 mkdir -p "${KUSTOMIZE_DIR}"
@@ -54,7 +57,7 @@ if [[ -n "${TLS_SECRET_NAME}" ]]; then
     JENKINS_URL="https://${JENKINS_HOST}"
     HELM_VALUES="${HELM_VALUES},master.ingress.tls[0].secretName=${TLS_SECRET_NAME}"
     HELM_VALUES="${HELM_VALUES},master.ingress.tls[0].hosts[0]=${JENKINS_HOST}"
-    HELM_VALUES="${HELM_VALUES},master.ingress.annotations.ingress\.bluemix\.net/redirect-to-https='True'"
+    HELM_VALUES="${HELM_VALUES},master.ingress.annotations.ingress\.bluemix\.net/redirect-to-https=True"
 fi
 
 if [[ -n "${STORAGE_CLASS}" ]]; then
@@ -68,23 +71,33 @@ helm template "${JENKINS_CHART}" \
     --name "${NAME}" \
     --set ${HELM_VALUES} \
     --values "${VALUES_FILE}" > "${JENKINS_BASE_KUSTOMIZE}"
+if [[ $? -ne - ]]; then
+  exit 1
+fi
 
 echo "*** Generating jenkins-config yaml from helm template"
 helm template "${JENKINS_CONFIG_CHART}" \
+    --name jenkins-config \
     --namespace "${NAMESPACE}" \
     --set jenkins.tls="${JENKINS_TLS}" \
     --set jenkins.host="${JENKINS_HOST}" > "${JENKINS_CONFIG_KUSTOMIZE}"
 
+echo "*** Generating jenkins-config yaml from helm template"
+helm template "${CLUSTER_ROLE_CHART}" \
+    --name jenkins-cluster-role \
+    --namespace "${NAMESPACE}" > "${CLUSTER_ROLE_KUSTOMIZE}"
+
 echo "*** Building final kube yaml from kustomize into ${JENKINS_YAML}"
 kustomize build "${JENKINS_KUSTOMIZE}" > "${JENKINS_YAML}"
+if [[ $? -ne 0 ]]; then
+  exit 1
+fi
 
 echo "*** Applying Jenkins yaml to kube"
 kubectl apply -n "${NAMESPACE}" -f "${JENKINS_YAML}"
 
-export EXCLUDE_POD_NAME="jenkins-config"
-
 echo "*** Waiting for Jenkins"
-until ${SCRIPT_DIR}/checkPodRunning.sh jenkins ${NAMESPACE} && curl -Isf --insecure "${JENKINS_URL}/login"; do
+until curl -Isf --insecure "${JENKINS_URL}/login"; do
     echo '>>> waiting for Jenkins'
     sleep 300
 done

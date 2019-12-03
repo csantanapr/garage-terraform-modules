@@ -7,6 +7,8 @@ CHART_NAME="$1"
 NAMESPACE="$2"
 VERSION="$3"
 INGRESS_HOST="$4"
+INGRESS_SUBDOMAIN="$5"
+ENABLE_ARGO_CACHE="$6"
 
 if [[ -n "${KUBECONFIG_IKS}" ]]; then
     export KUBECONFIG="${KUBECONFIG_IKS}"
@@ -25,10 +27,12 @@ KUSTOMIZE_PATCH="${KUSTOMIZE_DIR}/argocd/patch-ingress.yaml"
 
 ARGOCD_CHART="${CHART_DIR}/${CHART_NAME}"
 ACCESS_CHART="${MODULE_DIR}/charts/argocd-access"
+SOLSACM_CHART="${MODULE_DIR}/charts/solsa-cm"
 
 ARGOCD_KUSTOMIZE="${KUSTOMIZE_DIR}/argocd"
 ARGOCD_BASE_KUSTOMIZE="${ARGOCD_KUSTOMIZE}/base.yaml"
 ARGOCD_ACCESS_KUSTOMIZE="${ARGOCD_KUSTOMIZE}/access.yaml"
+ARGOCD_SOLSACM_KUSTOMIZE="${ARGOCD_KUSTOMIZE}/solsa/solsa-cm.yaml"
 
 ARGOCD_YAML="${TMP_DIR}/argocd.yaml"
 
@@ -47,22 +51,27 @@ echo "*** Setting up kustomize directory"
 mkdir -p "${KUSTOMIZE_DIR}"
 cp -R "${KUSTOMIZE_TEMPLATE}" "${KUSTOMIZE_DIR}"
 
+HELM_VALUES="server.ingress.enabled=true,server.ingress.hosts.0=${INGRESS_HOST},redis.enabled=${ENABLE_ARGO_CACHE}"
 if [[ -n "${TLS_SECRET_NAME}" ]]; then
-  cat "${KUSTOMIZE_PATCH_TEMPLATE}" | sed "s/argocd-secret/${TLS_SECRET_NAME}/g" > ${KUSTOMIZE_PATCH}
+  HELM_VALUES="${HELM_VALUES},server.ingress.tls.0.secretName=${TLS_SECRET_NAME},server.ingress.tls.0.hosts.0=${INGRESS_HOST}"
 fi
 
 echo "*** Generating kube yaml from helm template into ${ARGOCD_BASE_KUSTOMIZE}"
-helm template ${ARGOCD_CHART} \
-    --namespace ${NAMESPACE} \
-    --name ${CHART_NAME} \
-    --set ingress.enabled=true \
-    --set ingress.ssl_passthrough=false \
-    --set ingress.hosts.0=${INGRESS_HOST} > ${ARGOCD_BASE_KUSTOMIZE}
+helm template "${ARGOCD_CHART}" \
+    --namespace "${NAMESPACE}" \
+    --name "argocd" \
+    --set "${HELM_VALUES}" > ${ARGOCD_BASE_KUSTOMIZE}
 
 echo "*** Generating access yaml from helm template into ${ARGOCD_ACCESS_KUSTOMIZE}"
-helm template ${ACCESS_CHART} \
-    --namespace ${NAMESPACE} \
+helm template "${ACCESS_CHART}" \
+    --namespace "${NAMESPACE}" \
     --set url="http://${INGRESS_HOST}" > ${ARGOCD_ACCESS_KUSTOMIZE}
+
+echo "*** Generating solsa-cm yaml from helm template into ${ARGOCD_SOLSACM_KUSTOMIZE}"
+helm template ${SOLSACM_CHART} \
+    --namespace ${NAMESPACE} \
+    --set ingress.subdomain="${INGRESS_SUBDOMAIN}" \
+    --set ingress.tlssecret="${TLS_SECRET_NAME}" > ${ARGOCD_SOLSACM_KUSTOMIZE}
 
 echo "*** Building final kube yaml from kustomize into ${ARGOCD_YAML}"
 kustomize build "${ARGOCD_KUSTOMIZE}" > "${ARGOCD_YAML}"
