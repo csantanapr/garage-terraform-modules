@@ -1,0 +1,25 @@
+{{ $instanceName := required "The instanceName is required!" .Values.instanceName }}
+{{ $databaseOwner := required "The databaseOwner is required!" .Values.databaseOwner }}
+{{ $databaseName := required "The databaseName is required!" .Values.databaseName }}
+apiVersion: "acid.zalan.do/v1"
+kind: postgresql
+metadata:
+  name: {{ $instanceName }}
+  annotations:
+{{- if .Values.annotations }}
+{{ toYaml .Values.annotations | indent 4 }}
+{{ end }}
+spec:
+  teamId: {{ .Values.teamId }}
+  volume:
+    size: {{ default "1Gi" .Values.volumeSize }}
+  numberOfInstances: {{ default 1 .Values.numberOfInstances }}
+  users:
+    {{ $databaseOwner }}:  # database owner
+      - superuser
+      - createdb
+    {{ $databaseName }}_user: []  # role for application
+  databases:
+    {{ $databaseName }}: {{ $databaseOwner }}  # dbname: owner
+  postgresql:
+    version: {{ default "11" .Values.postgresVersion }}

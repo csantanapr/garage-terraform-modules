@@ -1,0 +1,8 @@
+
+instanceName: ""
+databaseName: ""
+teamId: "ACID"
+numberOfInstances: 2
+postgresVersion: ""
+volumeSize: ""
+annotations: {}
