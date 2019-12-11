@@ -85,3 +85,8 @@ variable "storage_class" {
   description = "The storage class of the persistence volume claim"
   default     = "ibmc-file-gold"
 }
+
+variable "persistence_enabled" {
+  description = "Flag indicating if persistence volume claim should be created"
+  default     = "true"
+}

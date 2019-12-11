@@ -16,7 +16,7 @@ resource "null_resource" "sonarqube_release" {
   }
 
   provisioner "local-exec" {
-    command = "${path.module}/scripts/deploy-sonarqube.sh ${self.triggers.releases_namespace} ${local.ingress_host} ${var.helm_version} ${var.service_account_name} ${var.volume_capacity} \"${jsonencode(var.plugins)}\""
+    command = "${path.module}/scripts/deploy-sonarqube.sh ${self.triggers.releases_namespace} ${local.ingress_host} ${var.helm_version} ${var.service_account_name} ${var.volume_capacity} ${var.persistence_enabled} \"${jsonencode(var.plugins)}\""
 
     environment = {
       KUBECONFIG_IKS    = self.triggers.kubeconfig_iks
