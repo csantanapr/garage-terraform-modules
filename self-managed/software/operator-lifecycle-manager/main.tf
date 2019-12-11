@@ -1,5 +1,4 @@
 
-
 resource "null_resource" "deploy_operator_lifecycle_manager" {
   count = "${replace(var.clusterVersion, "/([0-9]).*/", "$1") == "4" ? 0 : 1 }"
 
