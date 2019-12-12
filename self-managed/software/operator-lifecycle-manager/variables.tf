@@ -1,5 +1,5 @@
 
-variable "cluster_ype" {
+variable "cluster_type" {
   type        = "string"
   description = "The type of cluster (openshift or kubernetes)"
 }
