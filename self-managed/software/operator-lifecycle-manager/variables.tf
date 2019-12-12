@@ -1,10 +1,10 @@
 
-variable "clusterType" {
+variable "cluster_ype" {
   type        = "string"
   description = "The type of cluster (openshift or kubernetes)"
 }
 
-variable "clusterVersion" {
+variable "cluster_version" {
   type        = "string"
   description = "The version of kubernetes/openshift of the cluster"
 }
