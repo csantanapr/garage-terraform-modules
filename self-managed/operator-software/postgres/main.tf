@@ -1,7 +1,7 @@
 locals {
   tmp_dir       = "${path.cwd}/.tmp"
   instance_parts = ["${var.database_name}", "postgresql"]
-  instance_name = "${var.instance_name == "" ? join(local.instance_parts, "-") : var.instance_name}"
+  instance_name = "${var.instance_name == "" ? join("-", local.instance_parts) : var.instance_name}"
   database_user = "${var.database_user == "" ? var.database_name : var.database_user}"
   database_name = "${var.database_name}"
   password_file = "${local.tmp_dir}/postgres_password.val"
