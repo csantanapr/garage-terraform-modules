@@ -9,6 +9,11 @@ output "name" {
   description = "Name of the cluster."
 }
 
+output "version" {
+  value       = "${replace(data.local_file.latest_kube_version.content, "_openshift", "")}"
+  description = "Version of the cluster."
+}
+
 output "resource_group_name" {
   value       = var.resource_group_name
   description = "Name of the resource group containing the cluster."

@@ -8,6 +8,11 @@ output "name" {
   description = "Name of the cluster."
 }
 
+output "version" {
+  value       = "4.2"
+  description = "Version of the cluster."
+}
+
 output "resource_group_name" {
   value       = var.resource_group_name
   description = "Name of the resource group containing the cluster."
