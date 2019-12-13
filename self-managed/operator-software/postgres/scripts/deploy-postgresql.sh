@@ -7,6 +7,7 @@ NAMESPACE="$1"
 INSTANCE_NAME="$2"
 DATABASE_OWNER="$3"
 DATABASE_NAME="$4"
+STORAGE_CLASS="$5"
 
 OPERATOR_NAMESPACE="operators"
 
@@ -41,5 +42,6 @@ done
 helm template "${MODULE_DIR}/charts/postgresql" \
   --set instanceName="${INSTANCE_NAME}" \
   --set databaseOwner="${DATABASE_OWNER}" \
-  --set databaseName="${DATABASE_NAME}" > "${POSTGRES_YAML}"
+  --set databaseName="${DATABASE_NAME}" \
+  --set storageClass="${STORAGE_CLASS}" > "${POSTGRES_YAML}"
 kubectl create -n "${NAMESPACE}" -f "${POSTGRES_YAML}"

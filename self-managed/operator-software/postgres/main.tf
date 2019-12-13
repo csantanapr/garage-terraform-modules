@@ -10,7 +10,7 @@ locals {
 
 resource "null_resource" "deploy_postgres" {
   provisioner "local-exec" {
-    command = "${path.module}/scripts/deploy-postgresql.sh ${var.namespace} ${local.instance_name} ${local.database_user} ${local.database_name}"
+    command = "${path.module}/scripts/deploy-postgresql.sh ${var.namespace} ${local.instance_name} ${local.database_user} ${local.database_name} ${var.storage_class}"
 
     environment {
       KUBECONFIG_IKS = "${var.cluster_config_file}"
