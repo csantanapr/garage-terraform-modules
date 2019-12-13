@@ -29,3 +29,8 @@ variable "database_name" {
   type        = "string"
   description = "The name of the database"
 }
+
+variable "storage_class" {
+  type        = "string"
+  description = "The storage class of the postgres database"
+}

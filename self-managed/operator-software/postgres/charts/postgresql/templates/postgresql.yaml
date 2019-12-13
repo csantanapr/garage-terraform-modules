@@ -13,6 +13,9 @@ spec:
   teamId: {{ .Values.teamId }}
   volume:
     size: {{ default "1Gi" .Values.volumeSize }}
+    {{- if .Values.storageClass }}
+    storageClass: {{ .Values.storageClass }}
+    {{- end }}
   numberOfInstances: {{ default 1 .Values.numberOfInstances }}
   users:
     {{ $databaseOwner }}:  # database owner
