@@ -49,5 +49,6 @@ helm template "${MODULE_DIR}/charts/postgresql" \
   --set instanceName="${INSTANCE_NAME}" \
   --set databaseOwner="${DATABASE_OWNER}" \
   --set databaseName="${DATABASE_NAME}" \
-  --set storageClass="${STORAGE_CLASS}" > "${POSTGRES_YAML}"
+  --set storageClass="${STORAGE_CLASS}" \
+  --set teamId="${NAMESPACE}" > "${POSTGRES_YAML}"
 kubectl create -n "${NAMESPACE}" -f "${POSTGRES_YAML}"
