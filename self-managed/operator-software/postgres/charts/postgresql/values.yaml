@@ -2,7 +2,7 @@
 instanceName: ""
 databaseName: ""
 teamId: "acid"
-numberOfInstances: 2
+numberOfInstances: 1
 postgresVersion: ""
 volumeSize: ""
 storageClass: ""

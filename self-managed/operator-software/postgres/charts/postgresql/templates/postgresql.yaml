@@ -5,8 +5,8 @@ apiVersion: "acid.zalan.do/v1"
 kind: postgresql
 metadata:
   name: {{ printf "%s-%s" .Values.teamId $instanceName }}
-  annotations:
 {{- if .Values.annotations }}
+  annotations:
 {{ toYaml .Values.annotations | indent 4 }}
 {{ end }}
 spec:
