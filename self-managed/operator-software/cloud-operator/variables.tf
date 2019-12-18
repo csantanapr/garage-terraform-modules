@@ -17,3 +17,8 @@ variable "cluster_config_file" {
   type        = string
   description = "Cluster config file for Kubernetes cluster."
 }
+
+variable "olm_namespace" {
+  type        = "string"
+  description = "The namespace where OLM has been deployed"
+}

@@ -5,6 +5,7 @@ resource "null_resource" "deploy_cloud_operator" {
     environment={
       KUBECONFIG_IKS = "${var.cluster_config_file}"
       APIKEY         = "${var.ibmcloud_api_key}"
+      OLM_NAMESPACE  = "${var.olm_namespace}"
     }
   }
 }
