@@ -12,9 +12,9 @@ metadata:
 spec:
   teamId: {{ .Values.teamId }}
   volume:
-    size: {{ default "1Gi" .Values.volumeSize }}
+    size: {{ default "1Gi" .Values.volumeSize | quote }}
     {{- if .Values.storageClass }}
-    storageClass: {{ .Values.storageClass }}
+    storageClass: {{ .Values.storageClass | quote }}
     {{- end }}
   numberOfInstances: {{ default 1 .Values.numberOfInstances }}
   users:
@@ -25,4 +25,4 @@ spec:
   databases:
     {{ $databaseName }}: {{ $databaseOwner }}  # dbname: owner
   postgresql:
-    version: {{ default "11" .Values.postgresVersion }}
+    version: {{ default "11" .Values.postgresVersion | quote }}
