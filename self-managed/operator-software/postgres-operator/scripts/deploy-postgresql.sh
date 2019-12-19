@@ -16,6 +16,11 @@ mkdir -p ${TMP_DIR}
 
 kubectl create -f https://operatorhub.io/install/postgres-operator.yaml
 
+until kubectl get crd/operatorconfigurations.acid.zalan.do; do
+  echo "Waiting for Postgresql OperatorConfiguration CRD"
+  sleep 60
+done
+
 # Set up the operator configuration
 kubectl apply -f "${MODULE_DIR}/manifests/postgresql-operator-configuration.yaml" -n "${OPERATOR_NAMESPACE}"
 
@@ -34,5 +39,6 @@ if [[ -z $(kubectl get deployments/postgres-operator -n operators -o jsonpath='{
 fi
 
 until kubectl get pod -l name=postgres-operator -n "${OPERATOR_NAMESPACE}"; do
-  echo "Postgresql operator available"
+  echo "Waiting for Postgresql operator to be available"
+  sleep 60
 done
