@@ -27,7 +27,7 @@ kubectl apply -f "${MODULE_DIR}/manifests/postgresql-operator-configuration.yaml
 # Patch the deployment to include env variable pointing to configuration
 if [[ -z $(kubectl get deployments/postgres-operator -n operators -o jsonpath='{.spec.template.spec.containers[0].env[0].name}') ]]; then
   echo "Patching deploymemt"
-  kubectl patch deployents/postgres-operator \
+  kubectl patch deployments/postgres-operator \
     -n "${OPERATOR_NAMESPACE}" \
     --type='json' \
     -p='[{"op": "add", "path": "/spec/template/spec/containers/0/env", "value": [{"name": "POSTGRES_OPERATOR_CONFIGURATION_OBJECT", "value": "postgresql-operator-configuration"}]}]'
