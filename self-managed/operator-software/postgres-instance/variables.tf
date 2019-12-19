@@ -1,3 +1,8 @@
+variable "operator_namespace" {
+  type        = "string"
+  description = "The namespace where the postgress operator has been deployed"
+}
+
 variable "namespace" {
   type        = "string"
   description = "The namespace where the postgress instance will be deployed"

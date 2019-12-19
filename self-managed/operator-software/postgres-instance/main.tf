@@ -13,9 +13,9 @@ resource "null_resource" "deploy_postgres" {
     command = "${path.module}/scripts/deploy-postgresql.sh ${var.namespace} ${local.instance_name} ${local.database_user} ${local.database_name} ${var.storage_class}"
 
     environment {
-      KUBECONFIG_IKS = "${var.cluster_config_file}"
-      TMP_DIR        = "${local.tmp_dir}"
-      OLM_NAMESPACE  = "${var.olm_namespace}"
+      KUBECONFIG_IKS     = "${var.cluster_config_file}"
+      TMP_DIR            = "${local.tmp_dir}"
+      OPERATOR_NAMESPACE = "${var.operator_namespace}"
     }
   }
 }
