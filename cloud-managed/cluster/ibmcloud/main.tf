@@ -25,6 +25,7 @@ locals {
   server_url_file       = "${path.cwd}/.tmp/server-url.val"
   cluster_type_file     = "${path.cwd}/.tmp/cluster_type.val"
   ingress_url_file      = "${path.cwd}/.tmp/ingress-subdomain.val"
+  candidate_kube_version_file = "${path.cwd}/.tmp/candidate_kube_version.val"
   kube_version_file     = "${path.cwd}/.tmp/kube_version.val"
   tls_secret_file       = "${path.cwd}/.tmp/tls_secret.val"
   registry_url_file     = "${path.cwd}/.tmp/registry_url.val"
@@ -44,7 +45,7 @@ resource "null_resource" "get_openshift_version" {
   count = var.cluster_type == "openshift" || var.cluster_type == "ocp3" ? 1 : 0
 
   provisioner "local-exec" {
-    command = "ibmcloud ks versions --show-version openshift | grep default | sed -E \"s/^(.*) [(]default[)].*/\\1/g\" | xargs echo -n > ${local.kube_version_file}"
+    command = "ibmcloud ks versions --show-version openshift | grep default | sed -E \"s/^(.*) [(]default[)].*/\\1/g\" | xargs echo -n > ${local.candidate_kube_version_file}"
   }
 }
 
@@ -53,7 +54,7 @@ resource "null_resource" "get_openshift4_version" {
   count = var.cluster_type == "ocp4" ? 1 : 0
 
   provisioner "local-exec" {
-    command = "ibmcloud ks versions --show-version openshift | grep -E \"^4.*\" | xargs echo -n > ${local.kube_version_file}"
+    command = "ibmcloud ks versions --show-version openshift | grep -E \"^4.*\" | xargs echo -n > ${local.candidate_kube_version_file}"
   }
 }
 
@@ -62,18 +63,18 @@ resource "null_resource" "get_kubernetes_version" {
   count = var.cluster_type == "kubernetes" ? 1 : 0
 
   provisioner "local-exec" {
-    command = "ibmcloud ks versions --show-version kubernetes | grep default | sed -E \"s/^(.*) [(]default[)].*/\\1/g\" | xargs echo -n > ${local.kube_version_file}"
+    command = "ibmcloud ks versions --show-version kubernetes | grep default | sed -E \"s/^(.*) [(]default[)].*/\\1/g\" | xargs echo -n > ${local.candidate_kube_version_file}"
   }
 }
 
-data "local_file" "latest_kube_version" {
+data "local_file" "candidate_kube_version" {
   depends_on = [
     null_resource.get_openshift_version,
     null_resource.get_openshift4_version,
     null_resource.get_kubernetes_version,
   ]
 
-  filename = local.kube_version_file
+  filename = local.candidate_kube_version_file
 }
 
 resource "ibm_container_cluster" "create_cluster" {
@@ -138,6 +139,24 @@ data "local_file" "server_url" {
   depends_on = [null_resource.get_server_url]
 
   filename = local.server_url_file
+}
+
+resource "null_resource" "get_kube_version" {
+  depends_on = ["data.ibm_container_cluster_config.cluster", "null_resource.ibmcloud_login"]
+
+  provisioner "local-exec" {
+    command = "ibmcloud ks cluster get --cluster ${local.cluster_name} | grep \"Version\" | sed -E \"s/Version: +(.*)$/\\1/g\" | xargs echo -n > $${FILE}"
+
+    environment = {
+      FILE         = "${local.kube_version_file}"
+    }
+  }
+}
+
+data "local_file" "kube_version" {
+  depends_on = ["null_resource.get_server_url"]
+
+  filename = "${local.kube_version_file}"
 }
 
 resource "null_resource" "get_tls_secret_name" {

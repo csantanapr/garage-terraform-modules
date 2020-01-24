@@ -10,7 +10,7 @@ output "name" {
 }
 
 output "version" {
-  value       = "${replace(data.local_file.latest_kube_version.content, "_openshift", "")}"
+  value       = "${replace(data.local_file.kube_version.content, "_openshift", "")}"
   description = "Version of the cluster."
 }
 
