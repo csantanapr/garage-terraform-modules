@@ -14,6 +14,8 @@ if [[ -z "${TMP_DIR}" ]]; then
 fi
 mkdir -p ${TMP_DIR}
 
+kubectl create namespace "${OPERATOR_NAMESPACE}"
+
 kubectl create -f https://operatorhub.io/install/postgres-operator.yaml
 
 until kubectl get crd/operatorconfigurations.acid.zalan.do; do
