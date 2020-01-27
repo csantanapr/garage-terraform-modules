@@ -3,20 +3,45 @@
 SCRIPT_DIR=$(cd $(dirname $0); pwd -P)
 MODULE_DIR=$(cd "${SCRIPT_DIR}/.."; pwd -P)
 
-OPERATOR_NAMESPACE="$1"
-
-if [[ -n "${KUBECONFIG_IKS}" ]]; then
-    export KUBECONFIG="${KUBECONFIG_IKS}"
-fi
-
 if [[ -z "${TMP_DIR}" ]]; then
-    TMP_DIR=".tmp"
+  TMP_DIR="./.tmp"
 fi
 mkdir -p ${TMP_DIR}
 
-kubectl create namespace "${OPERATOR_NAMESPACE}"
+if [[ -z "${OPERATOR_NAMESPACE}" ]]; then
+  OPERATOR_NAMESPACE="openshift-operators"
+fi
 
-kubectl create -f https://operatorhub.io/install/postgres-operator.yaml
+CATALOG_SOURCE_FILE="${TMP_DIR}/csc.postgresql.yaml"
+
+cat > "${CATALOG_SOURCE_FILE}" << EOL
+apiVersion: operators.coreos.com/v1
+kind: CatalogSourceConfig
+metadata:
+  name: postgresql
+  namespace: openshift-marketplace
+spec:
+  targetNamespace: ${OPERATOR_NAMESPACE}
+  packages: postgresql
+EOL
+
+SUBSCRIPTION_SOURCE_FILE="${TMP_DIR}/sub.postgresql.yaml"
+
+cat > "${SUBSCRIPTION_SOURCE_FILE}" << EOL
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: postgresql
+  namespace: ${OPERATOR_NAMESPACE}
+spec:
+  channel: alpha
+  name: postgresql
+  source: postgresql
+  sourceNamespace: ${OPERATOR_NAMESPACE}
+EOL
+
+kubectl apply -f "${CATALOG_SOURCE_FILE}"
+kubectl apply -f "${SUBSCRIPTION_SOURCE_FILE}"
 
 until kubectl get crd/operatorconfigurations.acid.zalan.do; do
   echo "Waiting for Postgresql OperatorConfiguration CRD"
