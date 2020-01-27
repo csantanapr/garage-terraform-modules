@@ -42,7 +42,7 @@ resource "null_resource" "create_serviceaccount" {
 
 resource "null_resource" "add_ssc_openshift" {
   depends_on = ["null_resource.create_serviceaccount"]
-  count = "${var.cluster_type == "openshift" ? length(var.sscs) : "0"}"
+  count = "${var.cluster_type != "kubernetes" ? length(var.sscs) : "0"}"
 
   provisioner "local-exec" {
     command = "oc adm policy add-scc-to-user ${var.sscs[count.index]} -n ${var.namespace} -z ${var.service_account_name}"

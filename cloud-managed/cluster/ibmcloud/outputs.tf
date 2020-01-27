@@ -37,7 +37,7 @@ output "config_file_path" {
 
 output "type" {
   value       = "${data.local_file.cluster_type.content}"
-  description = "The type of cluster (openshift or kubernetes)"
+  description = "The type of cluster (openshift or ocp4 or ocp3 or kubernetes)"
   depends_on  = ["null_resource.ibmcloud_apikey_release"]
 }
 

@@ -59,7 +59,7 @@ variable "kubeconfig_download_dir" {
 
 variable "cluster_type" {
   type        = "string"
-  description = "The type of cluster that should be created (openshift or kubernetes)"
+  description = "The type of cluster that should be created (openshift or ocp3 or ocp4 or kubernetes)"
 }
 
 variable "ibmcloud_api_key" {

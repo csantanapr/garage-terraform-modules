@@ -6,7 +6,7 @@ locals {
 }
 
 resource "null_resource" "postgresql_release" {
-  count = "${var.cluster_type == "openshift" ? "1" : "0"}"
+  count = "${var.cluster_type != "kubernetes" ? "1" : "0"}"
   
   provisioner "local-exec" {
     command = "${path.module}/scripts/deploy-postgres_openshift.sh"
