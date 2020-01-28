@@ -133,7 +133,7 @@ resource "null_resource" "get_tls_secret_name" {
   depends_on = ["data.ibm_container_cluster_config.cluster", "null_resource.ibmcloud_login"]
 
   provisioner "local-exec" {
-    command = "ibmcloud ks cluster get --cluster ${local.cluster_name} | grep \"Ingress Secret\" | sed -E \"s/Ingress Secret: +(.*)$/\\1/g\" | xargs echo -n > $${FILE}"
+    command = "ibmcloud ks cluster get --cluster ${local.cluster_name} | grep \"Ingress Secret\" | sed -E \"s/Ingress Secret: +(.*)$/\\1/g\" | sed -E \"s/ *- *//g\" | xargs echo -n > $${FILE}"
 
     environment = {
       FILE         = "${local.tls_secret_file}"
