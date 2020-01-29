@@ -190,7 +190,7 @@ resource "null_resource" "check_cluster_type" {
     command = "if [[ \"$${PROVIDED_CLUSTER_TYPE}\" != \"$${ACTUAL_CLUSTER_TYPE}\" ]]; then echo \"Provided cluster type does not match the value from the server: $${ACTUAL_CLUSTER_TYPE}\"; exit 1; fi"
 
     environment = {
-      PROVIDED_CLUSTER_TYPE = "${var.cluster_type}"
+      PROVIDED_CLUSTER_TYPE = "${replace(var.cluster_type, "ocp[34]", "openshift")}"
       ACTUAL_CLUSTER_TYPE   = "${data.local_file.cluster_type.content}"
     }
   }
