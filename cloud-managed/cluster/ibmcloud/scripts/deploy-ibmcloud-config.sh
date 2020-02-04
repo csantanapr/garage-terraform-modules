@@ -20,6 +20,10 @@ if [[ -z "${TMP_DIR}" ]]; then
     TMP_DIR=".tmp"
 fi
 
+if [[ "${CLUSTER_TYPE}" == "ocp3" ]] || [[ "${CLUSTER_TYPE}" == "ocp4" ]]; then
+  CLUSTER_TYPE="openshift"
+fi
+
 NAME="ibmcloud-config"
 OUTPUT_YAML="${TMP_DIR}/ibmcloud-apikey.yaml"
 
