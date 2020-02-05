@@ -83,7 +83,6 @@ kustomize build "${ARTIFACTORY_KUSTOMIZE}" > "${OUTPUT_YAML}"
 echo "*** Applying kube yaml ${ARTIFACTORY_OUTPUT_YAML}"
 kubectl apply -n "${NAMESPACE}" -f "${OUTPUT_YAML}"
 
-npm i -g @garage-catalyst/ibm-garage-cloud-cli
 if [[ "${CLUSTER_TYPE}" == "openshift" ]] || [[ "${CLUSTER_TYPE}" == "ocp3" ]] || [[ "${CLUSTER_TYPE}" == "ocp4" ]]; then
   sleep 5
 
@@ -95,4 +94,5 @@ if [[ "${CLUSTER_TYPE}" == "openshift" ]] || [[ "${CLUSTER_TYPE}" == "ocp3" ]] |
   URL="https://${ARTIFACTORY_HOST}"
 fi
 
-igc tools-config --name artifactory --url "${URL}" --username admin --password password
+npm i -g @garage-catalyst/ibm-garage-cloud-cli
+igc tool-config --name artifactory --url "${URL}" --username admin --password password
