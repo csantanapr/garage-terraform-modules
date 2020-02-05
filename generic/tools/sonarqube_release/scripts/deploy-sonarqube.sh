@@ -103,7 +103,7 @@ if [[ "${CLUSTER_TYPE}" == "openshift" ]] || [[ "${CLUSTER_TYPE}" == "ocp3" ]] |
   sleep 5
 
   oc project ${NAMESPACE}
-  oc create route edge sonarqube --service=sonarqube-sonarqube
+  oc create route edge sonarqube --service=sonarqube-sonarqube --insecure-policy=Redirect
 
   HOST=$(oc get route sonarqube -n "${NAMESPACE}" -o jsonpath='{ .spec.host }')
 
