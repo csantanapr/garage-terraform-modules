@@ -16,6 +16,7 @@ resource "null_resource" "sonarqube_release" {
     environment = {
       KUBECONFIG_IKS    = "${var.cluster_config_file}"
       TMP_DIR           = "${local.tmp_dir}"
+      CLUSTER_TYPE      = "${var.cluster_type}"
       TLS_SECRET_NAME   = "${var.tls_secret_name}"
       STORAGE_CLASS     = "${var.storage_class}"
       DATABASE_HOST     = "${var.postgresql_hostname}"
