@@ -83,17 +83,16 @@ kustomize build "${ARTIFACTORY_KUSTOMIZE}" > "${OUTPUT_YAML}"
 echo "*** Applying kube yaml ${ARTIFACTORY_OUTPUT_YAML}"
 kubectl apply -n "${NAMESPACE}" -f "${OUTPUT_YAML}"
 
+npm i -g @garage-catalyst/ibm-garage-cloud-cli
 if [[ "${CLUSTER_TYPE}" == "openshift" ]] || [[ "${CLUSTER_TYPE}" == "ocp3" ]] || [[ "${CLUSTER_TYPE}" == "ocp4" ]]; then
-  oc project ${NAMESPACE}
-  oc expose service artifactory --name artifactory
-
   sleep 5
 
-  ARTIFACTORY_HOST=$(oc get route pactbroker -n "${NAMESPACE}" -o jsonpath='{ .spec.host }')
+  oc project "${NAMESPACE}"
+  oc expose service artifactory-artifactory --name artifactory
 
-  npm i -g @garage-catalyst/ibm-garage-cloud-cli
-  igc tools-config --name artifactory --url "https://${ARTIFACTORY_HOST}" --username admin --password password
-else
-  npm i -g @garage-catalyst/ibm-garage-cloud-cli
-  igc tools-config --name artifactory --url "${URL}" --username admin --password password
+  ARTIFACTORY_HOST=$(oc get route artifactory -n "${NAMESPACE}" -o jsonpath='{ .spec.host }')
+
+  URL="https://${ARTIFACTORY_HOST}"
 fi
+
+igc tools-config --name artifactory --url "${URL}" --username admin --password password
