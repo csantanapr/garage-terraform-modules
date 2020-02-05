@@ -93,4 +93,7 @@ if [[ "${CLUSTER_TYPE}" == "openshift" ]] || [[ "${CLUSTER_TYPE}" == "ocp3" ]] |
 
   npm i -g @garage-catalyst/ibm-garage-cloud-cli
   igc tools-config --name artifactory --url "https://${ARTIFACTORY_HOST}" --username admin --password password
+else
+  npm i -g @garage-catalyst/ibm-garage-cloud-cli
+  igc tools-config --name artifactory --url "${URL}" --username admin --password password
 fi
