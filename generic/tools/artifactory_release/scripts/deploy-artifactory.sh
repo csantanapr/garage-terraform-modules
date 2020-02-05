@@ -88,7 +88,7 @@ if [[ "${CLUSTER_TYPE}" == "openshift" ]] || [[ "${CLUSTER_TYPE}" == "ocp3" ]] |
   sleep 5
 
   oc project "${NAMESPACE}"
-  oc create route edge artifactory --service=artifactory-artifactory
+  oc create route edge artifactory --service=artifactory-artifactory --insecure-policy=Redirect
 
   ARTIFACTORY_HOST=$(oc get route artifactory -n "${NAMESPACE}" -o jsonpath='{ .spec.host }')
 
