@@ -7,6 +7,7 @@ locals {
   database_name = "pactbroker.sqlite"
   secret_name   = "pactbroker-access"
   config_name   = "pactbroker-config"
+  cluster_type  = "${var.cluster_type == "kubernetes" ? "kubernetes" : "openshift"}"
 }
 
 resource "null_resource" "pactbroker_release" {
@@ -16,6 +17,7 @@ resource "null_resource" "pactbroker_release" {
     environment = {
       KUBECONFIG_IKS = "${var.cluster_config_file}"
       TMP_DIR        = "${local.tmp_dir}"
+      CLUSTER_TYPE   = "${local.cluster_type}"
     }
   }
 
