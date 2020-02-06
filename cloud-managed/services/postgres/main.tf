@@ -16,7 +16,7 @@ locals {
 }
 
 resource "ibm_resource_instance" "create_postgresql_instance" {
-  count = "${var.server_exists != true ? "1" : "0"}"
+  count = var.server_exists != true ? 1 : 0
 
   name              = "${replace(local.name_prefix, "/[^a-zA-Z0-9_\\-\\.]/", "")}-postgresql"
   service           = "databases-for-postgresql"
@@ -54,7 +54,7 @@ resource "ibm_resource_key" "postgresql_credentials" {
 }
 
 resource "ibm_container_bind_service" "postgresql_service_binding" {
-  count      = "${local.namespace_count}"
+  count      = local.namespace_count
 
   cluster_name_id       = "${var.cluster_id}"
   service_instance_name = "${data.ibm_resource_instance.postgresql_instance.name}"

@@ -37,7 +37,7 @@ resource "ibm_resource_key" "cos_credentials" {
 }
 
 resource "ibm_container_bind_service" "cos_binding" {
-  count      = "${local.namespace_count}"
+  count      = local.namespace_count
 
   cluster_name_id             = "${var.cluster_id}"
   service_instance_name       = "${ibm_resource_instance.cos_instance.name}"

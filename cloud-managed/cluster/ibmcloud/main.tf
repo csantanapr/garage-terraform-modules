@@ -41,7 +41,7 @@ locals {
 
 resource "null_resource" "get_openshift_version" {
   depends_on = ["null_resource.ibmcloud_login"]
-  count = "${var.cluster_type == "openshift" || var.cluster_type == "ocp3" ? "1" : "0"}"
+  count = var.cluster_type == "openshift" || var.cluster_type == "ocp3" ? 1 : 0
 
   provisioner "local-exec" {
     command = "ibmcloud ks versions --show-version openshift | grep default | sed -E \"s/^(.*) [(]default[)].*/\\1/g\" | xargs echo -n > ${local.kube_version_file}"
@@ -50,7 +50,7 @@ resource "null_resource" "get_openshift_version" {
 
 resource "null_resource" "get_openshift4_version" {
   depends_on = ["null_resource.ibmcloud_login"]
-  count = "${var.cluster_type == "ocp4" ? "1" : "0"}"
+  count = var.cluster_type == "ocp4" ? 1 : 0
 
   provisioner "local-exec" {
     command = "ibmcloud ks versions --show-version openshift | grep -E \"^4.*\" | xargs echo -n > ${local.kube_version_file}"
@@ -59,7 +59,7 @@ resource "null_resource" "get_openshift4_version" {
 
 resource "null_resource" "get_kubernetes_version" {
   depends_on = ["null_resource.ibmcloud_login"]
-  count = "${var.cluster_type == "kubernetes" ? "1" : "0"}"
+  count = var.cluster_type == "kubernetes" ? 1 : 0
 
   provisioner "local-exec" {
     command = "ibmcloud ks versions --show-version kubernetes | grep default | sed -E \"s/^(.*) [(]default[)].*/\\1/g\" | xargs echo -n > ${local.kube_version_file}"
@@ -69,22 +69,22 @@ resource "null_resource" "get_kubernetes_version" {
 data "local_file" "latest_kube_version" {
   depends_on = ["null_resource.get_openshift_version", "null_resource.get_openshift4_version", "null_resource.get_kubernetes_version"]
 
-  filename = "${local.kube_version_file}"
+  filename = local.kube_version_file
 }
 
 resource "ibm_container_cluster" "create_cluster" {
-  count             = "${var.cluster_exists != true ? "1" : "0"}"
+  count             = var.cluster_exists != "true" ? 1 : 0
 
-  name              = "${local.cluster_name}"
-  datacenter        = "${var.vlan_datacenter}"
-  kube_version      = "${data.local_file.latest_kube_version.content}"
-  machine_type      = "${var.cluster_machine_type}"
-  hardware          = "${var.cluster_hardware}"
-  default_pool_size = "${var.cluster_worker_count}"
-  resource_group_id = "${data.ibm_resource_group.resource_group.id}"
-  private_vlan_id   = "${var.private_vlan_id}"
-  public_vlan_id    = "${var.public_vlan_id}"
-  tags              = ["${local.cluster_type_tag}"]
+  name              = local.cluster_name
+  datacenter        = var.vlan_datacenter
+  kube_version      = data.local_file.latest_kube_version.content
+  machine_type      = var.cluster_machine_type
+  hardware          = var.cluster_hardware
+  default_pool_size = var.cluster_worker_count
+  resource_group_id = data.ibm_resource_group.resource_group.id
+  private_vlan_id   = var.private_vlan_id
+  public_vlan_id    = var.public_vlan_id
+  tags              = [local.cluster_type_tag]
 }
 
 resource "null_resource" "create_cluster_config_dir" {
@@ -197,7 +197,7 @@ resource "null_resource" "check_cluster_type" {
 }
 
 resource "null_resource" "oc_login" {
-  count      = "${var.cluster_type != "kubernetes" ? "1": "0"}"
+  count      = var.cluster_type != "kubernetes" ? 1: 0
 
   provisioner "local-exec" {
     command = "oc login -u ${var.login_user} -p ${var.ibmcloud_api_key} --server=${data.local_file.server_url.content} > /dev/null"

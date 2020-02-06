@@ -42,7 +42,7 @@ resource "null_resource" "create_serviceaccount" {
 
 resource "null_resource" "add_ssc_openshift" {
   depends_on = ["null_resource.create_serviceaccount"]
-  count = "${var.cluster_type != "kubernetes" ? "1" : "0"}"
+  count = var.cluster_type != "kubernetes" ? 1 : 0
 
   provisioner "local-exec" {
     command = "${path.module}/scripts/add-sccs-to-user.sh ${jsonencode(var.sscs)}"
