@@ -68,7 +68,7 @@ variable "ibmcloud_api_key" {
 }
 
 variable "cluster_exists" {
-  type        = bool
+  type        = string
   description = "Flag indicating if the cluster already exists (true or false)"
 }
 

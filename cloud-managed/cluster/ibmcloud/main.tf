@@ -73,7 +73,7 @@ data "local_file" "latest_kube_version" {
 }
 
 resource "ibm_container_cluster" "create_cluster" {
-  count             = var.cluster_exists ? 1 : 0
+  count             = var.cluster_exists == "true" ? 0 : 1
 
   name              = local.cluster_name
   datacenter        = var.vlan_datacenter
