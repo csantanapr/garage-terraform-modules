@@ -1,7 +1,7 @@
 output "id" {
   value       = data.ibm_container_cluster_config.cluster.id
   description = "ID of the cluster."
-  depends_on  = ["null_resource.ibmcloud_apikey_release"]
+  depends_on  = [null_resource.ibmcloud_apikey_release]
 }
 
 output "name" {
@@ -32,13 +32,13 @@ output "server_url" {
 output "config_file_path" {
   value       = local.config_file_path
   description = "Path to the config file for the cluster."
-  depends_on  = ["null_resource.ibmcloud_apikey_release"]
+  depends_on  = [null_resource.ibmcloud_apikey_release]
 }
 
 output "type" {
   value       = data.local_file.cluster_type.content
   description = "The type of cluster (openshift or ocp4 or ocp3 or kubernetes)"
-  depends_on  = ["null_resource.ibmcloud_apikey_release"]
+  depends_on  = [null_resource.ibmcloud_apikey_release]
 }
 
 output "login_user" {
@@ -47,13 +47,13 @@ output "login_user" {
 }
 
 output "login_password" {
-  depends_on  = ["null_resource.oc_login"]
+  depends_on  = [null_resource.oc_login]
   value       = var.ibmcloud_api_key
   description = "The password used to log into the openshift cli"
 }
 
 output "ibmcloud_api_key" {
-  depends_on  = ["null_resource.oc_login"]
+  depends_on  = [null_resource.oc_login]
   value       = var.ibmcloud_api_key
   description = "The API key for the environment"
 }
