@@ -23,14 +23,15 @@ resource "null_resource" "create_namespaces" {
   count      = length(local.namespaces)
 
   triggers = {
-    namespace = local.namespaces[count.index]
+    namespace      = local.namespaces[count.index]
+    kubeconfig_iks = var.cluster_config_file_path
   }
 
   provisioner "local-exec" {
     command = "${path.module}/scripts/createNamespace.sh ${self.triggers.namespace}"
 
     environment = {
-      KUBECONFIG_IKS = var.cluster_config_file_path
+      KUBECONFIG_IKS = self.triggers.kubeconfig_iks
     }
   }
 
@@ -39,7 +40,7 @@ resource "null_resource" "create_namespaces" {
     command = "${path.module}/scripts/deleteNamespace.sh ${self.triggers.namespace}"
 
     environment = {
-      KUBECONFIG_IKS = var.cluster_config_file_path
+      KUBECONFIG_IKS = self.triggers.kubeconfig_iks
     }
   }
 }
