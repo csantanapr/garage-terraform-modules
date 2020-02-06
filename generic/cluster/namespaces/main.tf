@@ -25,16 +25,16 @@ resource "null_resource" "create_namespaces" {
     command = "${path.module}/scripts/createNamespace.sh ${local.namespaces[count.index]}"
 
     environment = {
-      KUBECONFIG_IKS = "${var.cluster_config_file_path}"
+      KUBECONFIG_IKS = var.cluster_config_file_path
     }
   }
 
   provisioner "local-exec" {
-    when    = "destroy"
+    when    = destroy
     command = "${path.module}/scripts/deleteNamespace.sh ${local.namespaces[count.index]}"
 
     environment = {
-      KUBECONFIG_IKS = "${var.cluster_config_file_path}"
+      KUBECONFIG_IKS = var.cluster_config_file_path
     }
   }
 }

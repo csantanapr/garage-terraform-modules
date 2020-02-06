@@ -28,7 +28,7 @@ resource "null_resource" "sonarqube_release" {
   }
 
   provisioner "local-exec" {
-    when    = "destroy"
+    when    = destroy
     command = "${path.module}/scripts/destroy-sonarqube.sh ${var.releases_namespace}"
 
     environment = {

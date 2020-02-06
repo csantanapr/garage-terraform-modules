@@ -31,7 +31,7 @@ resource "null_resource" "create_serviceaccount" {
   }
 
   provisioner "local-exec" {
-    when    = "destroy"
+    when    = destroy
     command = "${path.module}/scripts/delete-serviceaccount.sh ${var.namespace} ${var.service_account_name}"
 
     environment={

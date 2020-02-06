@@ -24,7 +24,7 @@ resource "null_resource" "jenkins_release_iks" {
   }
 
   provisioner "local-exec" {
-    when    = "destroy"
+    when    = destroy
     command = "${path.module}/scripts/destroy-jenkins.sh ${var.releases_namespace}"
 
     environment = {
@@ -46,7 +46,7 @@ resource "null_resource" "jenkins_release_openshift" {
   }
 
   provisioner "local-exec" {
-    when    = "destroy"
+    when    = destroy
     command = "${path.module}/scripts/destroy-jenkins.sh ${var.releases_namespace}"
   }
 }

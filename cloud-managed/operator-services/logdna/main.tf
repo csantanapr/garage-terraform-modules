@@ -26,7 +26,7 @@ resource "null_resource" "deploy_logdna" {
   }
 
   provisioner "local-exec" {
-    when    = "destroy"
+    when    = destroy
     command = "${path.module}/scripts/destroy-service.sh ${local.service_name} ${var.service_namespace}"
   }
 }
@@ -67,7 +67,7 @@ resource "null_resource" "logdna_bind" {
   }
 
   provisioner "local-exec" {
-    when    = "destroy"
+    when    = destroy
     command = "${path.module}/scripts/unbind-logdna.sh ${var.namespace}"
 
     environment = {

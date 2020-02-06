@@ -15,7 +15,7 @@ resource "null_resource" "catalystdashboard_release" {
   }
 
   provisioner "local-exec" {
-    when    = "destroy"
+    when    = destroy
     command = "${path.module}/scripts/destroy-catalystdashboard.sh ${var.releases_namespace}"
 
     environment = {

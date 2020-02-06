@@ -50,7 +50,7 @@ resource "null_resource" "logdna_bind" {
   }
 
   provisioner "local-exec" {
-    when    = "destroy"
+    when    = destroy
     command = "${path.module}/scripts/unbind-logdna.sh ${var.namespace}"
 
     environment = {

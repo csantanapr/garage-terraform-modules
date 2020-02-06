@@ -21,7 +21,7 @@ resource "null_resource" "postgresql_release" {
   }
 
   provisioner "local-exec" {
-    when    = "destroy"
+    when    = destroy
     command = "${path.module}/scripts/destroy-postgres.sh ${var.tools_namespace}"
   }
 }

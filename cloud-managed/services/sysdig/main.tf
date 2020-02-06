@@ -47,7 +47,7 @@ resource "null_resource" "create_sysdig_agent" {
   }
 
   provisioner "local-exec" {
-    when    = "destroy"
+    when    = destroy
     command = "${path.module}/scripts/unbind-sysdig.sh"
 
     environment = {

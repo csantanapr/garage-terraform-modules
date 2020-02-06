@@ -22,7 +22,7 @@ resource "null_resource" "pactbroker_release" {
   }
 
   provisioner "local-exec" {
-    when    = "destroy"
+    when    = destroy
     command = "${path.module}/scripts/destroy-pactbroker.sh ${var.releases_namespace}"
 
     environment = {

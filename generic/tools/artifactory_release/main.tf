@@ -20,11 +20,11 @@ resource "null_resource" "artifactory_release" {
   }
 
   provisioner "local-exec" {
-    when    = "destroy"
+    when    = destroy
     command = "${path.module}/scripts/destroy-artifactory.sh ${var.releases_namespace}"
 
     environment = {
-      KUBECONFIG_IKS = "${var.cluster_config_file}"
+      KUBECONFIG_IKS = var.cluster_config_file
     }
   }
 }

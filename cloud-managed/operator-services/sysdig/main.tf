@@ -28,7 +28,7 @@ resource "null_resource" "deploy_sysdig" {
   }
 
   provisioner "local-exec" {
-    when    = "destroy"
+    when    = destroy
     command = "${path.module}/scripts/destroy-service.sh ${local.service_name} ${var.service_namespace}"
   }
 }
@@ -85,7 +85,7 @@ resource "null_resource" "create_sysdig_agent" {
   }
 
   provisioner "local-exec" {
-    when    = "destroy"
+    when    = destroy
     command = "${path.module}/scripts/unbind-sysdig.sh"
 
     environment = {

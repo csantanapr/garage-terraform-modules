@@ -22,7 +22,7 @@ resource "null_resource" "deploy_cloudant" {
   }
 
   provisioner "local-exec" {
-    when    = "destroy"
+    when    = destroy
     command = "${path.module}/scripts/destroy-service.sh ${local.service_name} ${var.service_namespace}"
   }
 }

@@ -22,7 +22,7 @@ resource "null_resource" "argocd_release" {
   }
 
   provisioner "local-exec" {
-    when    = "destroy"
+    when    = destroy
     command = "${path.module}/scripts/destroy-argocd.sh ${var.releases_namespace}"
 
     environment = {
