@@ -19,9 +19,9 @@ variable "cluster_machine_type" {
 
 # Cluster Variables
 variable "cluster_worker_count" {
-  type        = "string"
+  type        = number
   description = "The number of worker nodes for the cluster"
-  default     = "2"
+  default     = 2
 }
 
 # Cluster Variables
@@ -68,7 +68,7 @@ variable "ibmcloud_api_key" {
 }
 
 variable "cluster_exists" {
-  type        = "string"
+  type        = bool
   description = "Flag indicating if the cluster already exists (true or false)"
 }
 

@@ -73,7 +73,7 @@ data "local_file" "latest_kube_version" {
 }
 
 resource "ibm_container_cluster" "create_cluster" {
-  count             = var.cluster_exists != "true" ? 1 : 0
+  count             = var.cluster_exists ? 1 : 0
 
   name              = local.cluster_name
   datacenter        = var.vlan_datacenter
@@ -96,9 +96,9 @@ resource "null_resource" "create_cluster_config_dir" {
 data "ibm_container_cluster_config" "cluster" {
   depends_on        = ["ibm_container_cluster.create_cluster", "null_resource.ibmcloud_login", "null_resource.create_cluster_config_dir"]
 
-  cluster_name_id   = "${local.cluster_name}"
-  resource_group_id = "${data.ibm_resource_group.resource_group.id}"
-  config_dir        = "${local.cluster_config_dir}"
+  cluster_name_id   = local.cluster_name
+  resource_group_id = data.ibm_resource_group.resource_group.id
+  config_dir        = local.cluster_config_dir
 }
 
 resource "null_resource" "create_cluster_pull_secret_iks" {
@@ -106,7 +106,7 @@ resource "null_resource" "create_cluster_pull_secret_iks" {
     command = "${path.module}/scripts/cluster-pull-secret-apply.sh ${local.cluster_name}"
 
     environment = {
-      KUBECONFIG_IKS = "${local.config_file_path}"
+      KUBECONFIG_IKS = local.config_file_path
     }
   }
 }
@@ -118,7 +118,7 @@ resource "null_resource" "get_server_url" {
     command = "ibmcloud ks cluster get --cluster ${local.cluster_name} | grep \"Master URL\" | sed -E \"s/Master URL: +(.*)$/\\1/g\" | xargs echo -n > $${FILE}"
 
     environment = {
-      FILE         = "${local.server_url_file}"
+      FILE         = local.server_url_file
     }
   }
 }
@@ -126,7 +126,7 @@ resource "null_resource" "get_server_url" {
 data "local_file" "server_url" {
   depends_on = ["null_resource.get_server_url"]
 
-  filename = "${local.server_url_file}"
+  filename = local.server_url_file
 }
 
 resource "null_resource" "get_tls_secret_name" {
@@ -136,7 +136,7 @@ resource "null_resource" "get_tls_secret_name" {
     command = "ibmcloud ks cluster get --cluster ${local.cluster_name} | grep \"Ingress Secret\" | sed -E \"s/Ingress Secret: +(.*)$/\\1/g\" | sed -E \"s/ *- *//g\" | xargs echo -n > $${FILE}"
 
     environment = {
-      FILE         = "${local.tls_secret_file}"
+      FILE         = local.tls_secret_file
     }
   }
 }
@@ -144,7 +144,7 @@ resource "null_resource" "get_tls_secret_name" {
 data "local_file" "tls_secret_name" {
   depends_on = ["null_resource.get_tls_secret_name"]
 
-  filename = "${local.tls_secret_file}"
+  filename = local.tls_secret_file
 }
 
 resource "null_resource" "get_ingress_subdomain" {
@@ -154,8 +154,8 @@ resource "null_resource" "get_ingress_subdomain" {
     command = "ibmcloud ks cluster get --cluster $${CLUSTER_NAME} | grep \"Ingress Subdomain\" | sed -E \"s/Ingress Subdomain: +(.*)$/\\1/g\" | xargs echo -n > $${FILE}"
 
     environment = {
-      CLUSTER_NAME = "${local.cluster_name}"
-      FILE         = "${local.ingress_url_file}"
+      CLUSTER_NAME = local.cluster_name
+      FILE         = local.ingress_url_file
     }
   }
 }
@@ -163,7 +163,7 @@ resource "null_resource" "get_ingress_subdomain" {
 data "local_file" "ingress_subdomain" {
   depends_on = ["null_resource.get_ingress_subdomain"]
 
-  filename = "${local.ingress_url_file}"
+  filename = local.ingress_url_file
 }
 
 resource "null_resource" "get_cluster_type" {
@@ -173,8 +173,8 @@ resource "null_resource" "get_cluster_type" {
     command = "if [[ -n $(ibmcloud ks cluster get --cluster $${CLUSTER_NAME} | grep -E \"Version.*openshift\") ]]; then echo -n \"openshift\" > $${FILE}; else echo -n \"kubernetes\" > $${FILE}; fi"
 
     environment = {
-      CLUSTER_NAME = "${local.cluster_name}"
-      FILE         = "${local.cluster_type_file}"
+      CLUSTER_NAME = local.cluster_name
+      FILE         = local.cluster_type_file
     }
   }
 }
@@ -182,7 +182,7 @@ resource "null_resource" "get_cluster_type" {
 data "local_file" "cluster_type" {
   depends_on = ["null_resource.get_cluster_type"]
 
-  filename = "${local.cluster_type_file}"
+  filename = local.cluster_type_file
 }
 
 resource "null_resource" "check_cluster_type" {
@@ -190,8 +190,8 @@ resource "null_resource" "check_cluster_type" {
     command = "if [[ \"$${PROVIDED_CLUSTER_TYPE}\" != \"$${ACTUAL_CLUSTER_TYPE}\" ]]; then echo \"Provided cluster type does not match the value from the server: $${ACTUAL_CLUSTER_TYPE}\"; exit 1; fi"
 
     environment = {
-      PROVIDED_CLUSTER_TYPE = "${replace(var.cluster_type, "/ocp[34]/", "openshift")}"
-      ACTUAL_CLUSTER_TYPE   = "${data.local_file.cluster_type.content}"
+      PROVIDED_CLUSTER_TYPE = replace(var.cluster_type, "/ocp[34]/", "openshift")
+      ACTUAL_CLUSTER_TYPE   = data.local_file.cluster_type.content
     }
   }
 }
@@ -209,7 +209,7 @@ resource "null_resource" "create_registry_namespace" {
     command = "${path.module}/scripts/create-registry-namespace.sh ${var.resource_group_name} ${var.cluster_region} ${local.registry_url_file}"
 
     environment = {
-      APIKEY = "${var.ibmcloud_api_key}"
+      APIKEY = var.ibmcloud_api_key
     }
   }
 }
@@ -217,7 +217,7 @@ resource "null_resource" "create_registry_namespace" {
 data "local_file" "registry_url" {
   depends_on = ["null_resource.create_registry_namespace"]
 
-  filename = "${local.registry_url_file}"
+  filename = local.registry_url_file
 }
 
 resource "null_resource" "ibmcloud_apikey_release" {
@@ -227,8 +227,8 @@ resource "null_resource" "ibmcloud_apikey_release" {
     command = "${path.module}/scripts/deploy-ibmcloud-config.sh ${local.ibmcloud_apikey_chart} ${local.config_namespace} ${var.ibmcloud_api_key} ${var.resource_group_name} ${data.local_file.server_url.content} ${var.cluster_type} ${local.cluster_name} ${data.local_file.ingress_subdomain.content} ${var.cluster_region} ${data.local_file.registry_url.content} ${data.local_file.tls_secret_name.content}"
 
     environment = {
-      KUBECONFIG_IKS = "${local.config_file_path}"
-      TMP_DIR        = "${local.tmp_dir}"
+      KUBECONFIG_IKS = local.config_file_path
+      TMP_DIR        = local.tmp_dir
     }
   }
 }
