@@ -15,7 +15,7 @@ resource "null_resource" "deploy_appid" {
   provisioner "local-exec" {
     command = "${path.module}/scripts/deploy-service.sh ${local.service_name} ${var.service_namespace} ${var.plan} ${local.service_class} ${local.binding_name} ${local.binding_namespaces}"
 
-    environment {
+    environment={
       KUBECONFIG_IKS = "${var.cluster_config_file}"
       REGION         = "${local.region}"
       RESOURCE_GROUP = "${var.resource_group_name}"
@@ -36,7 +36,7 @@ resource "null_resource" "appid_bind_credentials" {
   provisioner "local-exec" {
     command = "${path.module}/scripts/bind-classic-credentials.sh ${local.service_name} ${local.role} ${var.cluster_name} ${var.tools_namespace}"
 
-    environment {
+    environment={
       KUBECONFIG_IKS = "${var.cluster_config_file}"
     }
   }

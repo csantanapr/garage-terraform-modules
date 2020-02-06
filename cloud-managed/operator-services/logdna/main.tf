@@ -17,7 +17,7 @@ resource "null_resource" "deploy_logdna" {
   provisioner "local-exec" {
     command = "${path.module}/scripts/deploy-service.sh ${local.service_name} ${var.service_namespace} ${var.plan} ${local.service_class} ${local.binding_name} ${local.binding_namespaces} ${var.namespace}"
 
-    environment {
+    environment={
       KUBECONFIG_IKS = "${var.cluster_config_file_path}"
       REGION         = "${local.resource_location}"
       RESOURCE_GROUP = "${var.resource_group_name}"
@@ -43,7 +43,7 @@ resource "null_resource" "write_ingestion_key" {
   provisioner "local-exec" {
     command = "${path.module}/scripts/get-secret-value.sh ${local.binding_name} ${var.namespace} ingestion_key > ${local.ingestion_key_file}"
 
-    environment {
+    environment={
       KUBECONFIG_IKS = "${var.cluster_config_file_path}"
     }
   }

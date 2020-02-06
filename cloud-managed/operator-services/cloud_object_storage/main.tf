@@ -14,7 +14,7 @@ resource "null_resource" "deploy_cloud_object_store" {
   provisioner "local-exec" {
     command = "${path.module}/scripts/deploy-service.sh ${local.service_name} ${var.service_namespace} ${var.plan} ${local.service_class} ${local.binding_name} ${local.binding_namespaces}"
 
-    environment {
+    environment={
       KUBECONFIG_IKS = "${var.cluster_config_file}"
       REGION         = "${local.location}"
       RESOURCE_GROUP = "${var.resource_group_name}"

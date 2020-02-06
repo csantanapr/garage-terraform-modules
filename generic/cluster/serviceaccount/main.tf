@@ -13,7 +13,7 @@ resource "null_resource" "delete_serviceaccount" {
   provisioner "local-exec" {
     command = "${path.module}/scripts/delete-serviceaccount.sh ${var.namespace} ${var.service_account_name}"
 
-    environment {
+    environment={
       KUBECONFIG_IKS = "${var.cluster_config_file_path}"
     }
   }
@@ -25,7 +25,7 @@ resource "null_resource" "create_serviceaccount" {
   provisioner "local-exec" {
     command = "${path.module}/scripts/create-serviceaccount.sh ${var.namespace} ${var.service_account_name}"
 
-    environment {
+    environment={
       KUBECONFIG_IKS = "${var.cluster_config_file_path}"
     }
   }
@@ -34,7 +34,7 @@ resource "null_resource" "create_serviceaccount" {
     when    = "destroy"
     command = "${path.module}/scripts/delete-serviceaccount.sh ${var.namespace} ${var.service_account_name}"
 
-    environment {
+    environment={
       KUBECONFIG_IKS = "${var.cluster_config_file_path}"
     }
   }
@@ -47,7 +47,7 @@ resource "null_resource" "add_ssc_openshift" {
   provisioner "local-exec" {
     command = "${path.module}/scripts/add-sccs-to-user.sh ${jsonencode(var.sscs)}"
 
-    environment {
+    environment={
       SERVICE_ACCOUNT_NAME = "${var.service_account_name}"
       NAMESPACE            = "${var.namespace}"
     }

@@ -19,7 +19,7 @@ resource "null_resource" "deploy_sysdig" {
   provisioner "local-exec" {
     command = "${path.module}/scripts/deploy-service.sh ${local.service_name} ${var.service_namespace} ${var.plan} ${local.service_class} ${local.binding_name} ${local.binding_namespaces} ${var.tools_namespace}"
 
-    environment {
+    environment={
       KUBECONFIG_IKS = "${var.cluster_config_file_path}"
       REGION         = "${var.resource_location}"
       RESOURCE_GROUP = "${var.resource_group_name}"
@@ -45,7 +45,7 @@ resource "null_resource" "write_access_key" {
   provisioner "local-exec" {
     command = "${path.module}/scripts/get-secret-value.sh ${local.binding_name} ${var.tools_namespace} Sysdig_Access_Key > ${local.access_key_file}"
 
-    environment {
+    environment={
       KUBECONFIG_IKS = "${var.cluster_config_file_path}"
     }
   }
@@ -57,7 +57,7 @@ resource "null_resource" "write_endpoint" {
   provisioner "local-exec" {
     command = "${path.module}/scripts/get-secret-value.sh ${local.binding_name} ${var.tools_namespace} Sysdig_Collector_Endpoint > ${local.endpoint_file}"
 
-    environment {
+    environment={
       KUBECONFIG_IKS = "${var.cluster_config_file_path}"
     }
   }
