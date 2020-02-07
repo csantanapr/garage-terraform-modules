@@ -12,21 +12,26 @@ locals {
 
 // AppID - App Authentication
 resource "null_resource" "deploy_appid" {
+  triggers = {
+    service_name = local.service_name
+    service_namespace = var.service_namespace
+  }
+
   provisioner "local-exec" {
-    command = "${path.module}/scripts/deploy-service.sh ${local.service_name} ${var.service_namespace} ${var.plan} ${local.service_class} ${local.binding_name} ${local.binding_namespaces}"
+    command = "${path.module}/scripts/deploy-service.sh ${self.triggers.service_name} ${self.triggers.service_namespace} ${var.plan} ${local.service_class} ${local.binding_name} ${local.binding_namespaces}"
 
     environment={
-      KUBECONFIG_IKS = "${var.cluster_config_file}"
-      REGION         = "${local.region}"
-      RESOURCE_GROUP = "${var.resource_group_name}"
+      KUBECONFIG_IKS = var.cluster_config_file
+      REGION         = local.region
+      RESOURCE_GROUP = var.resource_group_name
       TMP_DIR        = "${path.cwd}/.tmp"
-      CLUSTER_NAME   = "${var.cluster_name}"
+      CLUSTER_NAME   = var.cluster_name
     }
   }
 
   provisioner "local-exec" {
     when    = destroy
-    command = "${path.module}/scripts/destroy-service.sh ${local.service_name} ${var.service_namespace}"
+    command = "${path.module}/scripts/destroy-service.sh ${self.triggers.service_name} ${self.triggers.service_namespace}"
   }
 }
 

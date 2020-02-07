@@ -12,23 +12,28 @@ locals {
 resource "null_resource" "jenkins_release_iks" {
   count = var.cluster_type == "kubernetes" ? 1 : 0
 
+  triggers = {
+    kubeconfig         = var.cluster_config_file
+    releases_namespace = var.releases_namespace
+  }
+
   provisioner "local-exec" {
-    command = "${path.module}/scripts/deploy-jenkins.sh ${var.releases_namespace} ${local.ingress_host} ${var.helm_version} ${var.tls_secret_name}"
+    command = "${path.module}/scripts/deploy-jenkins.sh ${self.triggers.releases_namespace} ${local.ingress_host} ${var.helm_version} ${var.tls_secret_name}"
 
     environment = {
-      KUBECONFIG    = "${var.cluster_config_file}"
-      STORAGE_CLASS = "${var.storage_class}"
-      TMP_DIR       = "${local.tmp_dir}"
+      KUBECONFIG    = self.triggers.kubeconfig
+      STORAGE_CLASS = var.storage_class
+      TMP_DIR       = local.tmp_dir
       EXCLUDE_POD_NAME = "deploy"
     }
   }
 
   provisioner "local-exec" {
     when    = destroy
-    command = "${path.module}/scripts/destroy-jenkins.sh ${var.releases_namespace}"
+    command = "${path.module}/scripts/destroy-jenkins.sh ${self.triggers.releases_namespace}"
 
     environment = {
-      KUBECONFIG_IKS = "${var.cluster_config_file}"
+      KUBECONFIG_IKS = self.triggers.kubeconfig
     }
   }
 }
@@ -36,17 +41,21 @@ resource "null_resource" "jenkins_release_iks" {
 resource "null_resource" "jenkins_release_openshift" {
   count = var.cluster_type != "kubernetes" ? 1 : 0
 
+  triggers = {
+    releases_namespace = var.releases_namespace
+  }
+
   provisioner "local-exec" {
-    command = "${path.module}/scripts/deploy-jenkins-openshift.sh ${var.releases_namespace} ${var.volume_capacity} ${var.storage_class}"
+    command = "${path.module}/scripts/deploy-jenkins-openshift.sh ${self.triggers.releases_namespace} ${var.volume_capacity} ${var.storage_class}"
 
     environment = {
-      TMP_DIR    = "${local.tmp_dir}"
-      SERVER_URL = "${var.server_url}"
+      TMP_DIR    = local.tmp_dir
+      SERVER_URL = var.server_url
     }
   }
 
   provisioner "local-exec" {
     when    = destroy
-    command = "${path.module}/scripts/destroy-jenkins.sh ${var.releases_namespace}"
+    command = "${path.module}/scripts/destroy-jenkins.sh ${self.triggers.releases_namespace}"
   }
 }

@@ -1,5 +1,5 @@
 locals {
-  namespaces         = ["${var.tools_namespace}", "${var.dev_namespace}", "${var.test_namespace}", "${var.staging_namespace}"]
+  namespaces         = [var.tools_namespace, var.dev_namespace, var.test_namespace, var.staging_namespace]
   namespace_count    = 4
   tmp_dir            = "${path.cwd}/.tmp"
   credentials_file   = "${path.cwd}/.tmp/postgres_credentials.json"
@@ -9,28 +9,33 @@ locals {
   password_file      = "${path.cwd}/.tmp/postgres_password.val"
   dbname_file        = "${path.cwd}/.tmp/postgres_dbname.val"
   role               = "Administrator"
-  name_prefix        = "${var.name_prefix != "" ? var.name_prefix : var.resource_group_name}"
+  name_prefix        = var.name_prefix != "" ? var.name_prefix : var.resource_group_name
   service_class      = "databases-for-postgresql"
   service_name       = "${replace(local.name_prefix, "/[^a-zA-Z0-9_\\-\\.]/", "")}-postgresql"
   binding_name       = "binding-postgresql"
-  binding_namespaces = "${jsonencode(local.namespaces)}"
+  binding_namespaces = jsonencode(local.namespaces)
 }
 
 resource "null_resource" "deploy_postgres" {
+  triggers = {
+    service_name      = local.service_name
+    service_namespace = var.service_namespace
+  }
+
   provisioner "local-exec" {
-    command = "${path.module}/scripts/deploy-service.sh ${local.service_name} ${var.service_namespace} ${var.plan} ${local.service_class} ${local.binding_name} ${local.binding_namespaces} ${var.tools_namespace}"
+    command = "${path.module}/scripts/deploy-service.sh ${self.triggers.service_name} ${self.triggers.service_namespace} ${var.plan} ${local.service_class} ${local.binding_name} ${local.binding_namespaces} ${var.tools_namespace}"
 
     environment={
-      KUBECONFIG_IKS = "${var.cluster_config_file}"
-      RESOURCE_GROUP = "${var.resource_group_name}"
-      REGION         = "${var.resource_location}"
-      TMP_DIR        = "${local.tmp_dir}"
+      KUBECONFIG_IKS = var.cluster_config_file
+      RESOURCE_GROUP = var.resource_group_name
+      REGION         = var.resource_location
+      TMP_DIR        = local.tmp_dir
     }
   }
 
   provisioner "local-exec" {
     when    = destroy
-    command = "${path.module}/scripts/destroy-service.sh ${local.service_name} ${var.service_namespace}"
+    command = "${path.module}/scripts/destroy-service.sh ${self.triggers.service_name} ${self.triggers.service_namespace}"
   }
 }
 
@@ -48,7 +53,7 @@ resource "null_resource" "write_postgres_credentials" {
     command = "${path.module}/scripts/get-secret-value.sh ${local.binding_name} ${var.tools_namespace} connection > ${local.credentials_file}"
 
     environment={
-      KUBECONFIG_IKS = "${var.cluster_config_file}"
+      KUBECONFIG_IKS = var.cluster_config_file
     }
   }
 }
@@ -96,29 +101,29 @@ resource "null_resource" "write_dbname" {
 data "local_file" "username" {
   depends_on = ["null_resource.write_username"]
 
-  filename = "${local.username_file}"
+  filename = local.username_file
 }
 
 data "local_file" "password" {
   depends_on = ["null_resource.write_password"]
 
-  filename = "${local.password_file}"
+  filename = local.password_file
 }
 
 data "local_file" "hostname" {
   depends_on = ["null_resource.write_hostname"]
 
-  filename = "${local.hostname_file}"
+  filename = local.hostname_file
 }
 
 data "local_file" "port" {
   depends_on = ["null_resource.write_port"]
 
-  filename = "${local.port_file}"
+  filename = local.port_file
 }
 
 data "local_file" "dbname" {
   depends_on = ["null_resource.write_dbname"]
 
-  filename = "${local.dbname_file}"
+  filename = local.dbname_file
 }
