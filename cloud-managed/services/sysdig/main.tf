@@ -36,7 +36,7 @@ resource "ibm_resource_key" "sysdig_instance_key" {
 }
 
 resource "null_resource" "create_sysdig_agent" {
-  depends_on = ["ibm_resource_key.sysdig_instance_key"]
+  depends_on = [ibm_resource_key.sysdig_instance_key]
 
   triggers = {
     kubeconfig_iks = var.cluster_config_file_path

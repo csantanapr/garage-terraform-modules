@@ -20,7 +20,7 @@ resource "null_resource" "delete_serviceaccount" {
 }
 
 resource "null_resource" "create_serviceaccount" {
-  depends_on = ["null_resource.delete_serviceaccount"]
+  depends_on = [null_resource.delete_serviceaccount]
 
   triggers = {
     kubeconfig_iks  = var.cluster_config_file_path
@@ -47,7 +47,7 @@ resource "null_resource" "create_serviceaccount" {
 }
 
 resource "null_resource" "add_ssc_openshift" {
-  depends_on = ["null_resource.create_serviceaccount"]
+  depends_on = [null_resource.create_serviceaccount]
   count = var.cluster_type != "kubernetes" ? 1 : 0
 
   provisioner "local-exec" {

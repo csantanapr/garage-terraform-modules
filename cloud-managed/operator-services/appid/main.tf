@@ -1,12 +1,12 @@
 locals {
   short_name         = "appid"
-  namespaces         = ["${var.dev_namespace}", "${var.test_namespace}", "${var.staging_namespace}"]
-  name_prefix        = "${var.name_prefix != "" ? var.name_prefix : var.resource_group_name}"
-  region             = "${var.resource_location == "us-east" ? "us-south" : var.resource_location}"
+  namespaces         = [var.dev_namespace, var.test_namespace, var.staging_namespace]
+  name_prefix        = var.name_prefix != "" ? var.name_prefix : var.resource_group_name
+  region             = var.resource_location == "us-east" ? "us-south" : var.resource_location
   service_name       = "${replace(local.name_prefix, "/[^a-zA-Z0-9_\\-\\.]/", "")}-${local.short_name}"
   service_class      = "appid"
   binding_name       = "binding-${local.short_name}"
-  binding_namespaces = "${jsonencode(local.namespaces)}"
+  binding_namespaces = jsonencode(local.namespaces)
   role               = "Manager"
 }
 
@@ -36,13 +36,13 @@ resource "null_resource" "deploy_appid" {
 }
 
 resource "null_resource" "appid_bind_credentials" {
-  depends_on = ["null_resource.deploy_appid"]
+  depends_on = [null_resource.deploy_appid]
 
   provisioner "local-exec" {
     command = "${path.module}/scripts/bind-classic-credentials.sh ${local.service_name} ${local.role} ${var.cluster_name} ${var.tools_namespace}"
 
     environment={
-      KUBECONFIG_IKS = "${var.cluster_config_file}"
+      KUBECONFIG_IKS = var.cluster_config_file
     }
   }
 }

@@ -19,7 +19,7 @@ resource "null_resource" "delete_namespaces" {
 }
 
 resource "null_resource" "create_namespaces" {
-  depends_on = ["null_resource.delete_namespaces"]
+  depends_on = [null_resource.delete_namespaces]
   count      = length(local.namespaces)
 
   triggers = {
@@ -46,7 +46,7 @@ resource "null_resource" "create_namespaces" {
 }
 
 resource "null_resource" "copy_tls_secrets" {
-  depends_on = ["null_resource.create_namespaces"]
+  depends_on = [null_resource.create_namespaces]
   count      = length(local.namespaces)
 
   provisioner "local-exec" {
@@ -59,7 +59,7 @@ resource "null_resource" "copy_tls_secrets" {
 }
 
 resource "null_resource" "copy_apikey_secret" {
-  depends_on = ["null_resource.create_namespaces"]
+  depends_on = [null_resource.create_namespaces]
   count      = length(local.namespaces)
 
   provisioner "local-exec" {
@@ -72,7 +72,7 @@ resource "null_resource" "copy_apikey_secret" {
 }
 
 resource "null_resource" "create_pull_secrets" {
-  depends_on = ["null_resource.create_namespaces"]
+  depends_on = [null_resource.create_namespaces]
   count      = length(local.namespaces)
 
   provisioner "local-exec" {
@@ -85,7 +85,7 @@ resource "null_resource" "create_pull_secrets" {
 }
 
 resource "null_resource" "copy_cloud_configmap" {
-  depends_on = ["null_resource.create_namespaces"]
+  depends_on = [null_resource.create_namespaces]
   count      = length(local.namespaces)
 
   provisioner "local-exec" {

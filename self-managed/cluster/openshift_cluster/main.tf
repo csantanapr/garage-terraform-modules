@@ -22,25 +22,25 @@ resource "null_resource" "oc_login" {
 }
 
 resource "null_resource" "ibmcloud_apikey_release" {
-  depends_on = ["null_resource.oc_login"]
+  depends_on = [null_resource.oc_login]
 
   provisioner "local-exec" {
     command = "${path.module}/scripts/deploy-ibmcloud-config.sh"
 
     environment = {
-      KUBECONFIG_IKS    = "${local.config_file_path}"
-      TMP_DIR           = "${local.tmp_dir}"
-      CHART             = "${local.ibmcloud_apikey_chart}"
-      NAMESPACE         = "${local.config_namespace}"
-      APIKEY            = "${var.ibmcloud_api_key}"
-      RESOURCE_GROUP    = "${var.resource_group_name}"
-      SERVER_URL        = "${local.server_url}"
-      CLUSTER_TYPE      = "${var.cluster_type}"
-      CLUSTER_NAME      = "${local.cluster_name}"
-      INGRESS_SUBDOMAIN = "${local.ingress_subdomain}"
-      TLS_SECRET_FILE   = "${local.tls_secret_file}"
-      TLS_SECRET_NAME   = "${var.tls_secret_name}"
-      REGISTRY_URL      = "${local.registry_url}"
+      KUBECONFIG_IKS    = local.config_file_path
+      TMP_DIR           = local.tmp_dir
+      CHART             = local.ibmcloud_apikey_chart
+      NAMESPACE         = local.config_namespace
+      APIKEY            = var.ibmcloud_api_key
+      RESOURCE_GROUP    = var.resource_group_name
+      SERVER_URL        = local.server_url
+      CLUSTER_TYPE      = var.cluster_type
+      CLUSTER_NAME      = local.cluster_name
+      INGRESS_SUBDOMAIN = local.ingress_subdomain
+      TLS_SECRET_FILE   = local.tls_secret_file
+      TLS_SECRET_NAME   = var.tls_secret_name
+      REGISTRY_URL      = local.registry_url
     }
   }
 }

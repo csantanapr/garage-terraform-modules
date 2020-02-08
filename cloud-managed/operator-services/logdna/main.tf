@@ -43,7 +43,10 @@ resource "null_resource" "create_tmp" {
 }
 
 resource "null_resource" "write_ingestion_key" {
-  depends_on = ["null_resource.deploy_logdna", "null_resource.create_tmp"]
+  depends_on = [
+    null_resource.deploy_logdna,
+    null_resource.create_tmp,
+  ]
 
   provisioner "local-exec" {
     command = "${path.module}/scripts/get-secret-value.sh ${local.binding_name} ${var.namespace} ingestion_key > ${local.ingestion_key_file}"
@@ -55,7 +58,7 @@ resource "null_resource" "write_ingestion_key" {
 }
 
 data "local_file" "injestion_key" {
-  depends_on = ["null_resource.write_ingestion_key"]
+  depends_on = [null_resource.write_ingestion_key]
 
   filename = local.ingestion_key_file
 }
