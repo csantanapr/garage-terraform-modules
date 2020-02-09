@@ -5,7 +5,8 @@ MODULE_DIR=$(cd "${SCRIPT_DIR}/.."; pwd -P)
 
 SOURCE_NAMESPACE="$1"
 TARGET_NAMESPACE="$2"
-OPERATOR_SOURCE="$3"
+OPERATOR_NAME="$3"
+OPERATOR_SOURCE="$4"
 
 if [[ -z "${TMP_DIR}" ]]; then
   TMP_DIR="./.tmp"
@@ -36,7 +37,7 @@ metadata:
   namespace: ${TARGET_NAMESPACE}
 spec:
   channel: stable
-  name: postgresql
+  name: ${OPERATOR_NAME}
   source: ${OPERATOR_SOURCE}
   sourceNamespace: ${SOURCE_NAMESPACE}
 EOF
