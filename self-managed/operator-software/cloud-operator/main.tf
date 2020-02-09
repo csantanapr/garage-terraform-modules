@@ -1,4 +1,5 @@
 locals {
+  tmp_dir         = "${path.cwd}/.tmp"
   namespace       = var.cluster_type == "ocp4" ? "openshift-operators": "operators"
   operator-source = var.cluster_type == "ocp4" ? "community-operators" : "operatorhubio-catalog"
 }
@@ -47,6 +48,7 @@ resource "null_resource" "deploy_cloud_operator" {
 
     environment={
       KUBECONFIG_IKS = var.cluster_config_file
+      TMP_DIR        = local.tmp_dir
     }
   }
 }

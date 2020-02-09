@@ -8,7 +8,14 @@ if [[ -n "${KUBECONFIG_IKS}" ]]; then
     export KUBECONFIG="${KUBECONFIG_IKS}"
 fi
 
-cat <<EOF | kubectl apply -f -
+if [[ -z "${TMP_DIR}" ]]; then
+  TMP_DIR="./.tmp"
+fi
+mkdir -p ${TMP_DIR}
+
+OUTPUT_YAML="${TMP_DIR}/ibmcloud-operator.yaml"
+
+cat <<EOF > "${OUTPUT_YAML}"
 apiVersion: operators.coreos.com/v1alpha1
 kind: Subscription
 metadata:
@@ -20,3 +27,5 @@ spec:
   source: ${OPERATOR_SOURCE}
   sourceNamespace: ${SOURCE_NAMESPACE}
 EOF
+
+kubectl apply -f "${OUTPUT_YAML}"
