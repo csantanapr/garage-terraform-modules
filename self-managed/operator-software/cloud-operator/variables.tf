@@ -1,3 +1,8 @@
+variable "cluster_type" {
+  type        = string
+  description = "The type of cluster (openshift or ocp3 or ocp4 or kubernetes)"
+}
+
 variable "resource_group_name" {
   type        = string
   description = "Resource group where the cluster has been provisioned."
