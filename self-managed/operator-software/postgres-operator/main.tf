@@ -1,29 +1,15 @@
 locals {
-  tmp_dir       = "${path.cwd}/.tmp"
-}
-
-resource "null_resource" "deploy_postgres" {
-  count      = "${var. == "openshift" ? "1": "0"}"
-
-  provisioner "local-exec" {
-    command = "${path.module}/scripts/deploy-postgresql.sh ${var.namespace}"
-
-    environment {
-      KUBECONFIG_IKS = "${var.cluster_config_file}"
-      TMP_DIR        = "${local.tmp_dir}"
-      OLM_NAMESPACE  = "${var.olm_namespace}"
-    }
-  }
+  tmp_dir         = "${path.cwd}/.tmp"
+  operator_source = var.cluster_type == "ocp4" ? "certified-operators" : "operatorhubio-catalog"
 }
 
 resource "null_resource" "deploy_postgres" {
   provisioner "local-exec" {
-    command = "${path.module}/scripts/deploy-postgresql.sh ${var.namespace}"
+    command = "${path.module}/scripts/deploy-postgresql-ocp4.sh ${var.olm_namespace} ${var.namespace} ${local.operator_source}"
 
     environment {
-      KUBECONFIG_IKS = "${var.cluster_config_file}"
-      TMP_DIR        = "${local.tmp_dir}"
-      OLM_NAMESPACE  = "${var.olm_namespace}"
+      KUBECONFIG_IKS = var.cluster_config_file
+      TMP_DIR        = local.tmp_dir
     }
   }
 }
