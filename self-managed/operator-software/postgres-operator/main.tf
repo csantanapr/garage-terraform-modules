@@ -6,7 +6,7 @@ locals {
 
 resource "null_resource" "deploy_postgres" {
   provisioner "local-exec" {
-    command = "${path.module}/scripts/deploy-postgresql-ocp4.sh ${var.olm_namespace} ${var.namespace} ${local.operator_name} ${local.operator_source}"
+    command = "${path.module}/scripts/deploy-postgresql.sh ${var.olm_namespace} ${var.namespace} ${local.operator_name} ${local.operator_source}"
 
     environment = {
       KUBECONFIG_IKS = var.cluster_config_file
