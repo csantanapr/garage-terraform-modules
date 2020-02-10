@@ -24,6 +24,22 @@ variable "cluster_config_file" {
 }
 
 variable "olm_namespace" {
-  type        = "string"
+  type        = string
+  description = "The namespace where OLM has been deployed"
+}
+
+variable "server_url" {
+  type        = string
+  description = "The namespace where OLM has been deployed"
+}
+
+variable "login_user" {
+  type        = string
+  description = "The namespace where OLM has been deployed"
+  default     = "apikey"
+}
+
+variable "login_password" {
+  type        = string
   description = "The namespace where OLM has been deployed"
 }

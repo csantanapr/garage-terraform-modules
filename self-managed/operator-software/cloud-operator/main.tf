@@ -4,6 +4,13 @@ locals {
   operator-source = var.cluster_type == "ocp4" ? "community-operators" : "operatorhubio-catalog"
 }
 
+provider "kubernetes" {
+  host     = var.server_url
+
+  username = var.login_user
+  password = var.login_password
+}
+
 resource "kubernetes_secret" "seed-secret" {
   metadata {
     name = "seed-secret"
