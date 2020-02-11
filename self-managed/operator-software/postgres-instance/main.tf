@@ -12,7 +12,7 @@ resource "null_resource" "deploy_postgres" {
   provisioner "local-exec" {
     command = "${path.module}/scripts/deploy-postgresql.sh ${var.namespace} ${local.instance_name} ${local.database_user} ${local.database_name} ${var.storage_class}"
 
-    environment {
+    environment = {
       KUBECONFIG_IKS     = var.cluster_config_file
       TMP_DIR            = local.tmp_dir
       OPERATOR_NAMESPACE = var.operator_namespace
@@ -35,7 +35,7 @@ resource "null_resource" "write_password" {
   provisioner "local-exec" {
     command = "${path.module}/scripts/get-secret-value.sh ${local.secret_name} ${var.namespace} password > ${local.password_file}"
 
-    environment {
+    environment = {
       KUBECONFIG_IKS = var.cluster_config_file
     }
   }
