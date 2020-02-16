@@ -69,7 +69,7 @@ else
 fi
 
 if [[ -n "${STORAGE_CLASS}" ]]; then
-  VALUES="${VALUES},persistence.storageClass=${STORAGE_CLASS}"
+  VALUES="${VALUES},persistence.storageClass=${STORAGE_CLASS},postgresql.persistence.storageClass=${STORAGE_CLASS}"
 fi
 
 echo "*** Generating sonarqube yaml from helm template with plugins ${PLUGIN_YAML}"
@@ -79,11 +79,6 @@ helm template "${SONARQUBE_CHART}" \
     --name "${NAME}" \
     --set ${VALUES} \
     --set persistence.size="${VOLUME_CAPACITY}" \
-    --set postgresql.postgresServer="${DATABASE_HOST}" \
-    --set postgresql.service.port="${DATABASE_PORT}" \
-    --set postgresql.postgresDatabase="${DATABASE_NAME}" \
-    --set postgresql.postgresUser="${DATABASE_USERNAME}" \
-    --set postgresql.postgresPassword="${DATABASE_PASSWORD}" \
     --set plugins.install=${PLUGIN_YAML} \
     --values "${VALUES_FILE}" > "${SONARQUBE_BASE_KUSTOMIZE}"
 

@@ -14,31 +14,6 @@ variable "cluster_ingress_hostname" {
   description = "Ingress hostname of the IKS cluster."
 }
 
-variable "postgresql_username" {
-  type        = string
-  description = "Username for the Databases for PostgreSQL service account to use for SonarQube."
-}
-
-variable "postgresql_password" {
-  type        = string
-  description = "Password for the Databases for PostgreSQL Sservice account to use for SonarQube."
-}
-
-variable "postgresql_hostname" {
-  type        = string
-  description = "Hostname for the Databases for PostgreSQL instance to use for SonarQube."
-}
-
-variable "postgresql_port" {
-  type        = string
-  description = "Port for the Databases for PostgreSQL instance to use for SonarQube."
-}
-
-variable "postgresql_database_name" {
-  type        = string
-  description = "Database name for the Databases for PostgreSQL instance to use for SonarQube."
-}
-
 variable "cluster_type" {
   description = "The cluster type (openshift or ocp3 or ocp4 or kubernetes)"
 }
