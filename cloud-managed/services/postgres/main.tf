@@ -9,11 +9,6 @@ data "ibm_resource_group" "tools_resource_group" {
 locals {
   role             = "Administrator"
   name_prefix      = var.name_prefix != "" ? var.name_prefix : var.resource_group_name
-  username         = ibm_resource_key.postgresql_credentials.credentials.connection.postgres.authentication.username
-  password         = ibm_resource_key.postgresql_credentials.credentials.connection.postgres.authentication.password
-  hostname         = ibm_resource_key.postgresql_credentials.credentials.connection.postgres.hosts[0].hostname
-  port             = ibm_resource_key.postgresql_credentials.credentials.connection.postgres.hosts[0].port
-  dbname           = ibm_resource_key.postgresql_credentials.credentials.connection.postgres.database
 }
 
 resource "ibm_resource_instance" "create_postgresql_instance" {
@@ -47,6 +42,21 @@ resource "ibm_resource_key" "postgresql_credentials" {
   name                 = "${data.ibm_resource_instance.postgresql_instance.name}-key"
   role                 = local.role
   resource_instance_id = data.ibm_resource_instance.postgresql_instance.id
+}
+
+data "ibm_resource_key" "postgresql" {
+  depends_on            = [ibm_resource_key.postgresql_credentials]
+
+  name                  = "${data.ibm_resource_instance.postgresql_instance.name}-key"
+  resource_instance_id  = data.ibm_resource_instance.postgresql_instance.id
+}
+
+locals {
+  username         = data.ibm_resource_key.postgresql.credentials.connection.postgres.authentication.username
+  password         = data.ibm_resource_key.postgresql.credentials.connection.postgres.authentication.password
+  hostname         = data.ibm_resource_key.postgresql.credentials.connection.postgres.hosts[0].hostname
+  port             = data.ibm_resource_key.postgresql.credentials.connection.postgres.hosts[0].port
+  dbname           = data.ibm_resource_key.postgresql.credentials.connection.postgres.database
 }
 
 resource "ibm_container_bind_service" "postgresql_service_binding" {
