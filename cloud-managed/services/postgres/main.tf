@@ -52,11 +52,12 @@ data "ibm_resource_key" "postgresql" {
 }
 
 locals {
-  username         = data.ibm_resource_key.postgresql.credentials.connection.postgres.authentication.username
-  password         = data.ibm_resource_key.postgresql.credentials.connection.postgres.authentication.password
-  hostname         = data.ibm_resource_key.postgresql.credentials.connection.postgres.hosts[0].hostname
-  port             = data.ibm_resource_key.postgresql.credentials.connection.postgres.hosts[0].port
-  dbname           = data.ibm_resource_key.postgresql.credentials.connection.postgres.database
+  credentials      = jsondecode(data.ibm_resource_key.postgresql.credentials)
+  username         = local.credentials.connection.postgres.authentication.username
+  password         = local.credentials.connection.postgres.authentication.password
+  hostname         = local.credentials.connection.postgres.hosts[0].hostname
+  port             = local.credentials.connection.postgres.hosts[0].port
+  dbname           = local.credentials.connection.postgres.database
 }
 
 resource "ibm_container_bind_service" "postgresql_service_binding" {
