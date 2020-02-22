@@ -76,3 +76,9 @@ resource "ibm_container_bind_service" "postgresql_service_binding" {
     ignore_changes = [id, namespace_id, service_instance_name]
   }
 }
+
+resource "null_resource" "print_credentials" {
+  provisioner "local-exec" {
+    command = "echo ${local.jsoncredentials}"
+  }
+}
