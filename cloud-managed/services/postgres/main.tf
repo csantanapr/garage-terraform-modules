@@ -46,7 +46,7 @@ resource "ibm_resource_key" "postgresql_credentials" {
 
 
 locals {
-  jsoncredentials  = jsonencode(ibm_resource_key.postgresql.credentials)
+  jsoncredentials  = jsonencode(ibm_resource_key.postgresql_credentials.credentials)
   credentials      = jsondecode(local.jsoncredentials)
   username         = local.credentials.connection.postgres.authentication.username
   password         = local.credentials.connection.postgres.authentication.password
