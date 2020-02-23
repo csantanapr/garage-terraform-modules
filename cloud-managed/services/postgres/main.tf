@@ -69,7 +69,7 @@ resource "ibm_container_bind_service" "postgresql_service_binding" {
   service_instance_name = data.ibm_resource_instance.postgresql_instance.name
   namespace_id          = var.namespaces[count.index]
   resource_group_id     = data.ibm_resource_group.tools_resource_group.id
-  key                   = ibm_resource_key.postgresql_credentials.name
+  key                   = data.ibm_resource_key.postgresql.name
 
   // The provider (v16.1) is incorrectly registering that these values change each time,
   // this may be removed in the future if this is fixed.
