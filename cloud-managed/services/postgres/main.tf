@@ -55,11 +55,11 @@ data "ibm_resource_key" "postgresql" {
 locals {
   jsoncredentials  = yamlencode(data.ibm_resource_key.postgresql.credentials)
   credentials      = yamldecode(local.jsoncredentials)
-  username         = local.credentials['connection.postgres.authentication.username']
-  password         = local.credentials['connection.postgres.authentication.password']
-  hostname         = local.credentials['connection.postgres.hosts.0.hostname']
-  port             = local.credentials['connection.postgres.hosts.0.port']
-  dbname           = local.credentials['connection.postgres.database']
+  username         = local.credentials["connection.postgres.authentication.username"]
+  password         = local.credentials["connection.postgres.authentication.password"]
+  hostname         = local.credentials["connection.postgres.hosts.0.hostname"]
+  port             = local.credentials["connection.postgres.hosts.0.port"]
+  dbname           = local.credentials["connection.postgres.database"]
 }
 
 resource "ibm_container_bind_service" "postgresql_service_binding" {
