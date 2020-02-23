@@ -53,12 +53,12 @@ data "ibm_resource_key" "postgresql" {
 }
 
 locals {
-  jsoncredentials  = jsonencode(data.ibm_resource_key.postgresql.credentials)
-  credentials      = jsondecode(local.jsoncredentials)
+  jsoncredentials  = yamlencode(data.ibm_resource_key.postgresql.credentials)
+  credentials      = yamldecode(local.jsoncredentials)
   username         = local.credentials.connection.postgres.authentication.username
   password         = local.credentials.connection.postgres.authentication.password
-  hostname         = local.credentials.connection.postgres.hosts[0].hostname
-  port             = local.credentials.connection.postgres.hosts[0].port
+  hostname         = local.credentials.connection.postgres.hosts.0..hostname
+  port             = local.credentials.connection.postgres.hosts.0.port
   dbname           = local.credentials.connection.postgres.database
 }
 
