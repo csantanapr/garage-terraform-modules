@@ -44,15 +44,9 @@ resource "ibm_resource_key" "postgresql_credentials" {
   resource_instance_id = data.ibm_resource_instance.postgresql_instance.id
 }
 
-data "ibm_resource_key" "postgresql" {
-  depends_on            = [ibm_resource_key.postgresql_credentials]
-
-  name                  = "${data.ibm_resource_instance.postgresql_instance.name}-key"
-  resource_instance_id  = data.ibm_resource_instance.postgresql_instance.id
-}
 
 locals {
-  jsoncredentials  = jsonencode(data.ibm_resource_key.postgresql.credentials)
+  jsoncredentials  = jsonencode(ibm_resource_key.postgresql.credentials)
   credentials      = jsondecode(local.jsoncredentials)
   username         = local.credentials.connection.postgres.authentication.username
   password         = local.credentials.connection.postgres.authentication.password
