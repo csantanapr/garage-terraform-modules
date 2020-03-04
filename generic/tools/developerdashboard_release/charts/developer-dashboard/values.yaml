@@ -8,7 +8,7 @@ host: "dashboard"
 ingressSubdomain: ""
 
 image:
-  repository: garagecatalyst/catalyst-dashboard
+  repository: ibmgaragecloud/developer-dashboard
   tag: latest
   pullPolicy: Always
   port: 3000
