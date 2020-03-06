@@ -9,4 +9,4 @@ metadata:
     "app.kubernetes.io/instance": "dashboard"
     group: catalyst-tools
 data:
-  DASHBOARD_URL: "https://dashboard-tools.gsi-learning-ocp311-clu-7ec5d722a0ab3f463fdc90eeb94dbc70-0001.eu-gb.containers.appdomain.cloud"
+  DASHBOARD_URL: "https://dashboard-tools.garage-dev-ocp4-c-518489-0143c5dd31acd8e030a1d6e0ab1380e3-0000.us-east.containers.appdomain.cloud"

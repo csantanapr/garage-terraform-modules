@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Sample usage :
-# ./deploy-dashboard.sh tools openshift dashboard gsi-learning-ocp311-clu-7ec5d722a0ab3f463fdc90eeb94dbc70-0000.eu-gb.containers.appdomain.cloud dev
+# ./deploy-dashboard.sh tools openshift dashboard garage-dev-ocp4-c-518489-0143c5dd31acd8e030a1d6e0ab1380e3-0000.us-east.containers.appdomain.cloud dev
 
 SCRIPT_DIR=$(cd $(dirname $0); pwd -P)
 MODULE_DIR=$(cd ${SCRIPT_DIR}/..; pwd -P)

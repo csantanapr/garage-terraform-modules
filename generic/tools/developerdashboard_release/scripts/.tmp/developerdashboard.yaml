@@ -61,10 +61,10 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-    - port: 443
-      targetPort: 8443
+    - port: 80
+      targetPort: 3000
       protocol: TCP
-      name: proxy
+      name: http
   selector:
     app: developer-dashboard
     release: developer-dashboard
@@ -100,28 +100,7 @@ spec:
         "app.kubernetes.io/component": developer-dashboard-pod
     spec:
       serviceAccountName: developer-dashboard
-      volumes:
-        - name: proxy-tls
-          secret:
-            secretName: dashboard-tls
       containers:
-        - name: oauth-proxy
-          image: openshift/oauth-proxy:latest
-          imagePullPolicy: IfNotPresent
-          ports:
-            - containerPort: 8443
-              name: public
-          args:
-            - --https-address=:8443
-            - --provider=openshift
-            - --openshift-service-account=developer-dashboard
-            - --upstream=http://localhost:3000
-            - --tls-cert=/etc/tls/private/tls.crt
-            - --tls-key=/etc/tls/private/tls.key
-            - --cookie-secret=SECRET
-          volumeMounts:
-            - mountPath: /etc/tls/private
-              name: proxy-tls
         - name: developer-dashboard
           image: "ibmgaragecloud/developer-dashboard:dev"
           imagePullPolicy: Always
@@ -154,4 +133,4 @@ spec:
     kind: Service
     name: developer-dashboard
   tls:
-    termination: Reencrypt
+    termination: Edge
