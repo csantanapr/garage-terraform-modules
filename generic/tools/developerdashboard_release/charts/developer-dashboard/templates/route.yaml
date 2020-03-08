@@ -8,5 +8,5 @@ spec:
     kind: Service
     name: {{ include "developer-dashboard.fullname" . }}
   tls:
-    termination: Reencrypt
+    termination: Edge
 {{- end }}
