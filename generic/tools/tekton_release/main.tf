@@ -38,6 +38,7 @@ resource "null_resource" "tekton_dashboard" {
     }
   }
 
+
   provisioner "local-exec" {
     when    = destroy
     command = "${path.module}/scripts/destroy-tekton-dashboard.sh ${self.triggers.dashboard_namespace} ${self.triggers.dashboard_version}"
